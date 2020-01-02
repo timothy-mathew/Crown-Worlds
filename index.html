@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>Crown Worlds</title>
-  <link rel="icon" href="https://1.bp.blogspot.com/-NGxP8i-BAVg/Xb4H8QbGKlI/AAAAAAAAFLk/XStv9Kjdemo27yV6wQ5oEoiHyVVaBqdXACLcBGAsYHQ/s1600/Weaponary_-_Flat_-_012_-_Crosshair-128.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
 </head>
 <body>
@@ -82,7 +81,7 @@ var sAT = 3.5;
 var t_sAT = 18 * sAT;
 var bossA_Enum = 0;
 var gameFont = createFont("Strait Bold");
-}
+
 /** Level Maps & Camera **/ {
 var levelMaps = [
     [
@@ -471,7 +470,6 @@ fill(255, 255, 255);
 pushMatrix();
 scale(sx,sy);
 translate(x,y);
-
 pushMatrix();
 rectMode(CORNER);
 translate(116,50);
@@ -480,7 +478,6 @@ rect(0,0,100,20);
 rotate(-90);
 arc(-10,4,20,19,-180,0);
 popMatrix();
-
 pushMatrix();
 rectMode(CORNER);
 translate(284,50);
@@ -489,22 +486,18 @@ rect(0,0,-100,20);
 rotate(90);
 arc(10,1,20,19,-180,0);
 popMatrix();
-
 pushMatrix();
 arc(200,-6,40,40,-135,-45);
 popMatrix();
-
 pushMatrix();
 rect(240,-16,20,50,10);
 popMatrix();
-
 pushMatrix();
 triangle(140, 90, 200, 25, 260, 90);
 rect(140,90,120,30);
 rect(140,120,30,60,2.5);
 rect(230,120,30,60,2.5);
 popMatrix();
-
 popMatrix();
 };
 var heartSymbol = function(x, y, sx, sy) {
@@ -912,7 +905,6 @@ Platform.prototype.draw = function(){
   this.z = random(width);
   this.n = random(1,5);
   this.pz = this.z;
-
   this.update = function() {
     this.z = this.z - speed;
     if (this.z < 1) {
@@ -923,16 +915,12 @@ Platform.prototype.draw = function(){
       this.pz = this.z;
     }
   };
-
   this.show = function() {
     fill(255);
     noStroke();
     strokeWeight(2);
-
-
     introF1M-=20.02;
     introF2M-=10.02;
-
     switch (this.n) {
         case 1: 
             fill(30, 0, 255);
@@ -957,17 +945,12 @@ Platform.prototype.draw = function(){
     }
     var sx = map(this.x / this.z, 0, 1, 0, width);
     var sy = map(this.y / this.z, 0, 1, 0, height);
-
     var r = map(this.z, 0, width, 16, 0);
     ellipse(sx, sy, r, r);
-
     var px = map(this.x / this.pz, 0, 1, 0, width);
     var py = map(this.y / this.pz, 0, 1, 0, height);
-
     this.pz = this.z;
-
     line(px, py, sx, sy);
-
   };
 };
   for (var i = 0; i < 800; i++) {
@@ -1077,7 +1060,6 @@ var backgroundLevelDraw = function(world) {
             bezier(cam.x+260, cam.y+305, cam.x-40, cam.y+40, cam.x+100, cam.y-60, cam.x-160, cam.y+305);
             bezier(cam.x+460, cam.y+350, cam.x+360, cam.y+40, cam.x+300, cam.y-60, cam.x+40, cam.y+305);
             
-
         break;
         case 3:
             
@@ -1260,7 +1242,6 @@ var MapPlayer = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 22);
             rotate(300);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -1320,7 +1301,6 @@ var MapPlayer = function(){
             scale(-1,1);
             translate(-this.x - 35, this.y + 23.5);
             rotate(300);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -1344,7 +1324,6 @@ var MapPlayer = function(){
     };
     this.drawStand = function(){
         noStroke();
-
         pushMatrix();
             translate(0, -5);
             //legs
@@ -1643,7 +1622,6 @@ var Player = function(){
     };
     this.drawDie = function(){
         noStroke();
-
         pushMatrix();
             translate(0, -5);
             //legs
@@ -1740,7 +1718,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 22);
             rotate(300);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -1799,7 +1776,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 20);
             rotate(310);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -1859,7 +1835,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 18.5);
             rotate(320);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -1919,7 +1894,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 17);
             rotate(330);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -1979,7 +1953,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 17);
             rotate(340);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2039,7 +2012,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 16.5);
             rotate(347.5);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2108,7 +2080,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 15);
             rotate(0);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2177,7 +2148,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 14);
             rotate(20);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2246,7 +2216,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 14);
             rotate(35);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2316,7 +2285,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 14);
             rotate(55);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -2332,7 +2300,6 @@ var Player = function(){
             popMatrix();
             
             popMatrix();
-
             // eyes
             fill(105, 0, 0);
             ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
@@ -2386,7 +2353,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 14);
             rotate(55);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -2456,7 +2422,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 14);
             rotate(45);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -2526,7 +2491,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 14);
             rotate(40);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -2596,7 +2560,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 13);
             rotate(30);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -2666,7 +2629,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 6, this.y + 14);
             rotate(15);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2736,7 +2698,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 3.5, this.y + 14);
             rotate(340);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2796,7 +2757,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 5, this.y + 18);
             rotate(335);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2855,7 +2815,6 @@ var Player = function(){
             pushMatrix();
             translate(this.x + 4, this.y + 18);
             rotate(320);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2915,7 +2874,6 @@ var Player = function(){
             scale(-1,1);
             translate(-this.x - 35, this.y + 23.5);
             rotate(300);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -2975,7 +2933,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 36.5, this.y + 20);
             rotate(310);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3036,7 +2993,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 34, this.y + 18.5);
             rotate(320);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3097,7 +3053,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 34, this.y + 17);
             rotate(330);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3158,7 +3113,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 32, this.y + 15);
             rotate(340);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3219,7 +3173,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 32, this.y + 15);
             rotate(340);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3291,7 +3244,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 35, this.y + 15);
             rotate(0);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3363,7 +3315,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 32, this.y + 14);
             rotate(20);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3435,7 +3386,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 33, this.y + 14);
             rotate(35);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -3507,7 +3457,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 33.5, this.y + 14);
             rotate(55);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -3579,7 +3528,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 33.5, this.y + 14);
             rotate(55);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -3651,7 +3599,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 30, this.y + 14);
             rotate(45);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -3723,7 +3670,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 32, this.y + 14);
             rotate(40);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -3795,7 +3741,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 33, this.y + 13);
             rotate(30);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -3867,7 +3812,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 33, this.y + 13);
             rotate(30);
-
             pushMatrix();
             translate(0, 0);
             rotate(15);
@@ -3939,7 +3883,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 36, this.y + 14);
             rotate(340);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -4011,7 +3954,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 35, this.y + 18);
             rotate(335);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -4083,7 +4025,6 @@ var Player = function(){
             scale(-1, 1);
             translate(-this.x - 35, this.y + 18);
             rotate(335);
-
             pushMatrix();
             translate(0, 0);
             rotate(10);
@@ -4156,7 +4097,6 @@ var Player = function(){
                     this.drawRunL1();
                 } 
             }
-
             if(keys[RIGHT]&& (!keys[LEFT])){
                 this.xvel += this.moveSpeed;
                 if (!this.falling) {
@@ -4424,7 +4364,6 @@ var Player = function(){
                         this.xvel = 0;
                         this.x = p.x + p.w;
                     }
-
                 }
             } 
             else if (this.y + this.h > p.y && this.y < p.y + p.h && this.x + this.w > p.x + meX && this.x < p.x + p.w + meX && p.type === 'enemy1') {
@@ -4581,7 +4520,6 @@ var drawLevelBase = function(world) {
             
     cam.follow(p);
     fill(255, 0, 0);
-
     backgroundLevelDraw(world);
     pushMatrix();
         translate(0,187.5);
@@ -4590,7 +4528,6 @@ var drawLevelBase = function(world) {
         }
         p.update(platforms);
     popMatrix();
-
         if (mode === "1-1" || mode === "1-2" || mode === "1-3") {
             pushMatrix();
             translate(cloudX-600,0);
@@ -4684,7 +4621,6 @@ var drawLevelBase = function(world) {
         text("x", cam.x - 263, cam.y - 82);
         textSize(30);
         text((10 - deaths), cam.x - 251, cam.y - 80);
-
         fill(219, 219, 219,240);
         noStroke();
         ellipse(cam.x+220,cam.y-80,20,20); 
@@ -4699,7 +4635,6 @@ var drawLevelBase = function(world) {
             textSize(32);
             text(ceil(realTimer), cam.x + 242, cam.y - 70);
         }
-
         
         if (realTimer < 0) {
             p.timerDead++;
@@ -4740,8 +4675,6 @@ var drawBossBase = function() {
         
         p.update(platforms);
     popMatrix();
-
-
     if (p.dead) {
         stopwatch = 0;
         pushMatrix();
@@ -4808,7 +4741,6 @@ var drawBossBase = function() {
         text("x", cam.x - 263, cam.y - 82);
         textSize(30);
         text((10 - deaths), cam.x - 251, cam.y - 80);
-
         fill(219, 219, 219,240);
         noStroke();
         ellipse(cam.x+220,cam.y-80,20,20); 
@@ -4823,7 +4755,6 @@ var drawBossBase = function() {
             textSize(32);
             text(ceil(realTimer), cam.x + 242, cam.y - 70);
         }
-
    
     if ((stopwatch > 1.5 && stopwatch < 2.5) || (stopwatch > 6.5 && stopwatch < 7.5) || (stopwatch > 11.5 && stopwatch < 12.5)) {
         meX-=5;
@@ -4901,7 +4832,6 @@ var drawWorldMap = function() {
     homeWMB.display();
     cam2.follow(mp);
             
-
     fill(71, 255, 0);
     stroke(0, 255, 0);
     rect(0,-400,600,400);
@@ -4909,7 +4839,6 @@ var drawWorldMap = function() {
     fill(255, 204, 0);
     stroke(255, 136, 0);
     rect(0, -600, 1000, 200);
-
     fill(158, 236, 255);
     stroke(255, 255, 255);
     rect(600,-400,400,400);
@@ -4927,8 +4856,6 @@ var drawWorldMap = function() {
     //     line(0,-50*i,600,-50*i);
     //     line(50*i,0,50*i,-600);
     // }
-
-
     rc1_a.draw();
     rc1_b.draw();
     rc1_c.draw();
@@ -5140,14 +5067,12 @@ var drawInstructions = function() {
 };
 var drawMenu = function() {
     background(0, 255, 217);
-
     if (tX < 292) {
         tX += 10;
     }
     if (t2X > 309) {
         t2X -= 10;
     }
-
     textFont(gameFont, 100);
         for(var i = 0; i < 8; i++){
             pushMatrix();
@@ -5253,9 +5178,7 @@ var drawIntro = function(){
     stars[i].show();
   }
     popMatrix();
-
     timer++;
-
     if (timer > 120 && textIntroSize < 70) {
         textIntroSize++;
         textIntroColor += 3;
@@ -5281,7 +5204,6 @@ var drawIntro = function(){
     }
     textSize(textIntroSize);
     textAlign(CENTER);
-
     
         
     fill(textIntroColor1, textIntroColor2, textIntroColor3);
@@ -5290,7 +5212,6 @@ var drawIntro = function(){
     //     transitionsF1M = map(transitionsF1, 0, 0.98, 100, 250);
     //     transitionsF2M = map(transitionsF1, 0, 0.98, 155, 25);
     //     transitionsF3M = map(transitionsF1, 0, 0.98, 0, 255);
-
     // fill(transitionsF1M, transitionsF2M, transitionsF3M);
     text("Timmy625 \nPresents", 300, 300);
     textAlign(LEFT);
@@ -5403,7 +5324,6 @@ draw = function(){
     click = false;
 };
 }
-
         }
         if (typeof draw !== 'undefined') processing.draw = draw;
     });
