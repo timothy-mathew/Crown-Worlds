@@ -1,0 +1,5412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crown Worlds</title>
+  <link rel="icon" href="https://1.bp.blogspot.com/-NGxP8i-BAVg/Xb4H8QbGKlI/AAAAAAAAFLk/XStv9Kjdemo27yV6wQ5oEoiHyVVaBqdXACLcBGAsYHQ/s1600/Weaponary_-_Flat_-_012_-_Crosshair-128.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script class="crownworlds">
+    var canvas = document.getElementById("canvas");
+    var processing = new Processing(canvas, function(processing) {
+        processing.size(600, 600);
+        processing.background(0xFFF);
+        var mouseIsPressed = false;
+        processing.mousePressed = function () { mouseIsPressed = true; };
+        processing.mouseReleased = function () { mouseIsPressed = false; };
+        var keyIsPressed = false;
+        processing.keyPressed = function () { keyIsPressed = true; };
+        processing.keyReleased = function () { keyIsPressed = false; };
+        function getImage(s) {
+            var url = "https://www.kasandbox.org/programming-images/" + s + ".png";
+            processing.externals.sketch.imageCache.add(url);
+            return processing.loadImage(url);
+        }
+        // use degrees rather than radians in rotate function
+        var rotateFn = processing.rotate;
+        processing.rotate = function (angle) {
+            rotateFn(processing.radians(angle));
+        };
+        with (processing) {
+            var mode;
+var currentLevel = 0;
+var mLevel = "";
+var click = false;
+var clickable = true;
+var deaths = 0;
+var coins = 0;
+var points = 0;
+var playerSkin = 0;
+var meX = 0;
+var mePX = false;
+var cloudX = 0;
+var tX = -200;
+var t2X = 800;
+var r = 0;
+var r2 = 0;
+var wmA = 0;
+var realTimer = 20;
+var stopwatch = 0;
+var timerPORTAL = 0;
+var crowns = 0;
+var stars = [];
+var speed = 0.5;
+var timer = 0;
+var textIntroSize = 0;
+var textIntroColor = 70;
+var textIntroColor1 = 255;
+var textIntroColor2 = 200;
+var textIntroColor3 = 0;
+var keys = [];
+var keyPressed = function(){
+    keys[keyCode] = true;
+};
+var keyReleased = function(){
+    keys[keyCode] = false;
+};
+var transitions = {
+    peak: false,
+    w: 0,
+    next: '',
+};
+var transitionsF1;
+var transitionsF1M = 255;
+var transitionsF2M = 200;
+var transitionsF3M = 0;
+var introF1;
+var introF1M = 100;
+var introF2M = 0;
+var introF3M = 255;
+var sAT = 3.5;
+var t_sAT = 18 * sAT;
+var bossA_Enum = 0;
+var gameFont = createFont("Strait Bold");
+}
+/** Level Maps & Camera **/ {
+var levelMaps = [
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                       h                                     ",
+      "                                     ggggg                                   ",
+      "                                                                             ",   
+      "                                    ccccc                                    ",
+      "                                 gggggggggg                                  ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                            gggg                             ",
+      "                                     c                                       ",
+      "                                         c                                   ",
+      "               c                     ggggg                                   ",
+      "      c      c   c       s       c                           cc                    ", 
+      "      c             ggggggg   c            cc     cc   cc gggggg        e        P    ",
+      "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggGGGGGGgggggggggggggggggggggg",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG", 
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",      
+    ],
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                                      ",
+      "                                     c                                                ",
+      "                                         c                                            ",
+      "    gggggg      c                     ggggg                               cc          ",
+      "                c    c    c                   e        c                    e   gg", 
+      "     c          s         s        cc                gggg                       GG P",
+      "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg   ggg     gggggGGgggggggg",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG   GGG     GGGGGGGGGGGGGGG", 
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG   GGG     GGGGGGGGGGGGGGG",      
+    ],
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                                      ",
+      "                                     c                                                ",
+      "                                         c                                            ",
+      "                c                                                         cc          ",
+      "                c    c    c                           c                       ", 
+      "         ggg               ggg   cc                gggg                        p",
+      "gggg   gggggggggggggggggggggggggggggggggg    ggggggggggggggggggggggggggggggggggggggggggggg",
+      "GGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG    GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG", 
+      "GGGG   GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG    GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",      
+    ],
+    [
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "         e   e      e       ",
+      "   gg                  gg   ",
+      "gggGGggggggggggggggggggGGggg",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGG", 
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGG",      
+    ],
+    //w2
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                             ",
+      "                                     c                                       ",
+      "                                         c                                   ",
+      "               c                     zzzzz                                   ",
+      "      c      c   c       ss       c                           cc                    ", 
+      "      ec     zzzzzz   c  zz           cc     cc   cc zzzzz        e            P     ",
+      "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz     zzzzzzzzzz   zzzzzzzzz",
+      "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ     ZZZZZZZZZZ   ZZZZZZZZZ", 
+      "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ     ZZZZZZZZZZ   ZZZZZZZZZZ",       
+    ],
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                                      ",
+      "                                     c                                                ",
+      "                                         c                                            ",
+      "    zzzzzz      c                     zzzzz                               cc          ",
+      "                c    c    c                   e        c                    e   zz", 
+      "     c     s    s    s    s        cc                zzzz                       ZZ P",
+      "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz   zzz     zzzzZZzzzzzzzzz",
+      "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ   ZZZ     ZZZZZZZZZZZZZZZ", 
+      "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ   ZZZ     ZZZZZZZZZZZZZZZ",      
+    ],
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                                      ",
+      "                                     c                                                ",
+      "                                         c                                            ",
+      "                c                                                         cc          ",
+      "                c    c    c                           c                       ", 
+      "         zzz               zzz   cc                zzzz                        p",
+      "zzzzzzzzzzzzzzzzzzz    zzzzzzzzzzzzzzzzzz    zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+      "ZZZZZZZZZZZZZZZZZZZ    ZZZZZZZZZZZZZZZZZZ    ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 
+      "ZZZZZZZZZZZZZZZZZZZ    ZZZZZZZZZZZZZZZZZZ    ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",      
+    ],
+    [
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                                 ",
+      "                e                ",
+      "                                 ",
+      "         e   zzzzzzz      e      ",
+      "   zz                  zz        ",
+      "zzzZZzzzzzz         zzzZZzzzzzzzz",
+      "ZZZZZZZZZZZ         ZZZZZZZZzzzzz", 
+      "ZZZZZZZZZZZ         ZZZZZZZZzzzzz",      
+    ],
+    //w3
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                             ",
+      "                                     c                                       ",
+      "                                  es      c                                   ",
+      "               c                  ii    ii                                   ",
+      "      c      c   c       s       c                           cc                    ", 
+      "      c             iiiiiiii   c            cc     cc   cc iiiiii        e        P    ",
+      "iiiiiiiiii    iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii   iiiiiiii",
+      "IIIIIIIIII    IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII   IIIIIIII", 
+      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII   IIIIIIII",   
+    ],
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                                      ",
+      "                                     c                                                ",
+      "                                         c                                            ",
+      "    iiiiii      c                     iiiii                               cc          ",
+      "                c    c    c                   e        c                    e   ii", 
+      "     c     s    ss    s    ss        cc                iiii                       II P ",
+      "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii   iii     iiiiiIIiiiiiiii",
+      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII   III     IIIIIIIIIIIIIII", 
+      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII   III     IIIIIIIIIIIIIII",      
+    ],
+    [
+      "                                                                                       ",
+      "                    ",
+      "                  ",
+      "                  ",
+      "                 ",
+      "                  ",
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",   
+      "                                                                             ",
+      "                                                                             ",
+      "                                                                             ",       
+      "                                                                             ",
+      "                                                                                      ",
+      "                                     c                                                ",
+      "                                         c                                            ",
+      "                c                                                         cc          ",
+      "                c    c    c                           c                       ", 
+      "         iii               iii   cc                iiii                        p",
+      "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii    iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII    IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII", 
+      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII    IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII",      
+    ],
+    [
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "                                    ",
+      "           e           e            ",
+      "                                    ",
+      "          iiii       iiiii          ",
+      "                                    ",
+      "       iiii                         ",
+      "         e         e               ",
+      "                       II           ",
+      "iii  iiiiiiiiiiiiiiiiiiIIiiiiiiiiiii",
+      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII", 
+      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII",  
+    ],
+    //w4
+        [
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "                                             ",
+      "           e           e                     ",
+      "           s     s          ss                ",
+      "          gg   gg       gggggg                            e",
+      "                                                     ",
+      "       gg   gg    gg                                 e  zzz",
+      "         e         e                         e                    e               e       e           ",
+      "                       GG   s                     s                         s    ss          s      ",
+      "ggg  ggggggggggggggggggggggggg      zz    zzzzzzzzzzz  zzz     iiiiiiiiiiiiiiiiiii     iiiiiiii",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG   h  ZZ    ZZZZZZZZZZZ  ZZZ     IIIIIIIIIIIIIIII   i    IIIIIIII", 
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG      ZZ    ZZZZZZZZZZZ  ZZZ     IIIIIIIIIIIIIIII        IIIIIIII",  
+    ],
+    //w5
+        [
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                            ",
+      "                                                                                                   P   ",
+      "gggggggggggggggggggggggggggggg     zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz     iiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG     ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ     IIIIIIIIIIIIIIIIIIIIIIIIIIIIII", 
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG     ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ     IIIIIIIIIIIIIIIIIIIIIIIIIIIIII",      
+    ],
+];
+var Camera = function(x,y){
+    this.x = x; this.y = y; 
+    this.w = width; this.h = height;
+    this.inView = function(obj){
+        return (obj.x + obj.w + this.hw) > this.x > (obj.x - this.hw) &&
+               (obj.y + obj.h + this.hh) > this.y > (obj.y - this.hh);
+    };
+    this.follow = function(plyer){
+        this.angle = atan2(plyer.y-this.y, plyer.x-this.x);
+        this.v = dist(this.x,this.y,plyer.x,plyer.y)/8;
+        this.x+=cos(this.angle)*this.v;
+        this.y+=sin(this.angle)*this.v;
+        this.x = constrain(this.x,300,((levelMaps[currentLevel][(levelMaps[currentLevel].length-1)].length)*25-300));
+        this.y = constrain(this.y,300,425);
+        translate(300-round(this.x),300-round(this.y));
+    };
+};
+var Camera2 = function(x,y){
+    this.x = x; this.y = y; 
+    this.w = width; this.h = height;
+    this.inView = function(obj){
+        return (obj.x + obj.w + this.hw) > this.x > (obj.x - this.hw) &&
+               (obj.y + obj.h + this.hh) > this.y > (obj.y - this.hh);
+    };
+    this.follow = function(plyer){
+     
+        this.angle = atan2(plyer.y-this.y, plyer.x-this.x);
+        this.v = dist(this.x,this.y,plyer.x,plyer.y)/8;
+        this.x+=cos(this.angle)*this.v;
+        this.y+=sin(this.angle)*this.v;
+        this.x = constrain(this.x,300,1933);
+        this.y = constrain(this.y,300,425);
+        translate(300-round(this.x),300-round(this.y));
+        
+    };
+};
+var cam = new Camera(0,0);
+var cam2 = new Camera2(0,0);
+}
+/** Symbols**/ {
+var homeSymbol = function(x, y, sx, sy) {
+fill(255, 255, 255);
+pushMatrix();
+scale(sx,sy);
+translate(x,y);
+
+pushMatrix();
+rectMode(CORNER);
+translate(116,50);
+rotate(315);
+rect(0,0,100,20);
+rotate(-90);
+arc(-10,4,20,19,-180,0);
+popMatrix();
+
+pushMatrix();
+rectMode(CORNER);
+translate(284,50);
+rotate(45);
+rect(0,0,-100,20);
+rotate(90);
+arc(10,1,20,19,-180,0);
+popMatrix();
+
+pushMatrix();
+arc(200,-6,40,40,-135,-45);
+popMatrix();
+
+pushMatrix();
+rect(240,-16,20,50,10);
+popMatrix();
+
+pushMatrix();
+triangle(140, 90, 200, 25, 260, 90);
+rect(140,90,120,30);
+rect(140,120,30,60,2.5);
+rect(230,120,30,60,2.5);
+popMatrix();
+
+popMatrix();
+};
+var heartSymbol = function(x, y, sx, sy) {
+    pushMatrix();
+    translate(x, y);
+    scale(sx, sy);
+    fill(255, 0, 0);
+    stroke(255, 0, 0);
+    ellipse(50,50,50,50);
+    ellipse(95,50,50,50);
+    fill(255, 0, 0);
+    triangle(30,65,72.5,105,114,65);
+    popMatrix();
+};
+var crownSymbol = function(x, y, sx, sy) {
+    pushMatrix();
+    translate(x, y);
+    scale(sx, sy);
+    fill(255, 179, 0);
+    stroke(255, 180, 0);
+    rect(150,-250,150,50);
+               
+    fill(255, 217, 0);
+    stroke(255, 220, 0);
+    rect(150,-200,150,20,5);
+    rect(150,-260,150,20,5);
+                
+    fill(0, 128, 255);
+    noStroke();
+    ellipse(170,-220,15,15);
+    ellipse(198,-220,17.5,17.5);
+    ellipse(230,-220,25,25);
+    ellipse(262,-220,17.5,17.5);
+    ellipse(290,-220,15,15);
+    
+    fill(255, 204, 0);
+    stroke(255, 200, 0);
+    triangle(155,-260,225,-340,295,-260);
+    triangle(140,-320,155,-260,225,-260);
+    triangle(310,-320,295,-260,225,-260);
+    popMatrix();
+};
+var cloudSymbol = function(x, y, sx, sy, c) {
+    pushMatrix();
+    translate(x, y);
+    scale(sx, sy);
+    noStroke();
+    if (c === 0) {
+        fill(245, 245, 245);
+    } else if (c === 1) {
+        fill(102, 102, 102);
+    } else if (c === 2) {
+        fill(255, 230, 130);
+    } else if (c === 3) {
+        fill(224, 245, 255);
+    }
+        ellipse(0,10,30,30);
+        ellipse(15,-10,30,30);
+        ellipse(18,10,30,30);
+        ellipse(20,-10,30,30);
+        ellipse(35,9,30,30);
+    popMatrix();
+};
+var playSymbol = function(x, y, sx, sy) {
+    pushMatrix();
+    translate(x, y);
+    scale(sx, sy);
+    fill(255, 255, 255);
+    stroke(255, 255, 255);
+    triangle(5, 0, 80*sin(60) - 8, 0, 0, -36);
+    triangle(5, 0, 80*sin(60) - 8, 0, 0, 36);
+    stroke(255, 255, 255);
+    strokeWeight(6);
+    line(0, -40, 0, 40);
+    line(0, -40, 80*sin(60), 0);
+    line(0, 40, 80*sin(60), 0);
+    popMatrix();
+};
+}
+/** Buttons **/ { 
+var Button = function(x, y, w, h, color, addColor, text, textSize, mode, clickable) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.color = color;
+    this.addColor = 0;
+    this.text = text;
+    this.textSize = textSize;
+    this.mode = mode;
+    this.clickable = clickable;
+};
+Button.prototype.display = function() {
+    this.addColor = 0;
+    if (this.check()) {
+        this.addColor = 50;
+        cursor("pointer");
+        if (click) {
+                mode = this.mode;
+            }
+        }
+        rectMode(CENTER);
+        strokeWeight(5);
+        stroke(255, 255, 255);
+        textAlign(CENTER,CENTER);
+        if (this.clickable) {
+                fill(red(this.color) + this.addColor, green(this.color) + this.addColor, blue(this.color) + this.addColor);
+        } else {
+            fill(143, 143, 143);
+        }
+        rect(this.x, this.y, this.w, this.h, 3);
+        
+        fill(255, 255, 255);
+        textSize(this.textSize);
+        text(this.text, this.x, this.y);
+        rectMode(LEFT);
+    };
+Button.prototype.changeClickable = function() {
+    this.clickable = true;
+};
+Button.prototype.check = function() {
+        return (mouseX > (this.x - (this.w / 2)) && mouseX < (this.x + (this.w / 2)) && mouseY > (this.y - (this.h / 2)) && (mouseY < this.y + (this.h / 2))) && this.clickable === true;
+};
+var startB = new Button(172, 325, 96, 96, color(0, 123, 255), 50, "", 40, "worldMap", true);
+var instructionsB = new Button(400, 325, 96, 96, color(50, 255, 30), 50, "?", 90, "instructions", true);
+var leaderboardB = new Button(282, 450, 324, 96, color(255, 0, 217), 50, "Leaderboard", 40, "leaderboard", true);
+var homeB = new Button(365, 365, 50, 50, color(255, 0, 0), 50, "", 0, "menu", true, 0, 0, true);
+var homeIB = new Button(555, 40, 50, 50, color(255, 0, 0), 50, "", 0, "menu", true, 0, 0, true);
+var homeWMB = new Button(cam.x, cam.y, 50, 50, color(255, 0, 0), 50, "", 0, "menu", true, 0, 0, true);
+var homeGOB = new Button(300, 500, 100, 100, color(255, 0, 0), 50, "", 0, "menu", true, 0, 0, true);
+}
+/** Platforms**/ {
+var platforms = [];
+var Platform = function(x, y, type){
+    this.x = x;
+    this.y = y;
+    this.w = 25;
+    this.h = 25;
+    this.type = type;
+};
+Platform.prototype.draw = function(){
+    switch(this.type){
+        case 'G1':
+            if (cam.inView) {
+                noStroke();
+                fill(140, 70, 20);
+                rect(this.x, this.y+5, 25, 15);
+                fill(130, 60, 10);
+                rect(this.x, this.y+15, 25, 15);
+                noFill();
+                strokeWeight(2.75);
+                stroke(105, 35, 0);
+                // arc(this.x+6, this.y+15.5, 10.1, 3, 0, 180);
+                // arc(this.x+18.5, this.y+15.5, 10.1, 3, 180, 360);
+                fill(11, 174, 0);
+                noStroke();
+                rect(this.x, this.y, 25, 5);
+                //arc(this.x+12.5, this.y+1.5, 20, 11, 0, 180);
+            }
+        break;
+        case 'G2':
+            if (cam.inView) {            
+                noStroke();
+                stroke(140, 70, 20);
+                fill(140, 70, 20);
+                rect(this.x, this.y, 25, 05);
+                rect(this.x, this.y+5, 25, 10);
+                fill(130, 60, 10);
+                stroke(130, 60, 10);
+                rect(this.x, this.y+15, 25, 10);
+                noFill();
+                strokeWeight(2.75);
+                stroke(105, 35, 0);
+                // arc(this.x+6, this.y+15.5, 10.1, 3, 0, 180);
+                // arc(this.x+18.5, this.y+15.5, 10.1, 3, 180, 360);
+            }
+            
+        break;
+        case 'S1':
+            if (cam.inView) {
+                noStroke();
+                fill(255, 162, 0);
+                rect(this.x, this.y+5, 25, 15);
+                fill(255, 170, 0);
+                rect(this.x, this.y+15, 25, 15);
+                noFill();
+                strokeWeight(2.75);
+                stroke(105, 35, 0);
+                // arc(this.x+6, this.y+15.5, 10.1, 3, 0, 180);
+                // arc(this.x+18.5, this.y+15.5, 10.1, 3, 180, 360);
+                fill(255, 140, 0);
+                noStroke();
+                rect(this.x, this.y, 25, 5);
+                //arc(this.x+12.5, this.y+1.5, 20, 11, 0, 180);
+            }
+        break;
+        case 'S2':
+            if (cam.inView) {            
+                noStroke();
+                stroke(255, 162, 0);
+                fill(255, 162, 0);
+                rect(this.x, this.y, 25, 05);
+                rect(this.x, this.y+5, 25, 10);
+                fill(255, 170, 0);
+                stroke(255, 170, 0);
+                rect(this.x, this.y+15, 25, 10);
+                noFill();
+                strokeWeight(2.75);
+                stroke(105, 35, 0);
+                // arc(this.x+6, this.y+15.5, 10.1, 3, 0, 180);
+                // arc(this.x+18.5, this.y+15.5, 10.1, 3, 180, 360);
+            }
+            
+        break;
+        case 'I1':
+            if (cam.inView) {
+                noStroke();
+                fill(210, 230, 255);
+                rect(this.x, this.y+5, 25, 15);
+                fill(195, 225, 255);
+                rect(this.x, this.y+15, 25, 15);
+                noFill();
+                strokeWeight(2.75);
+                stroke(105, 35, 0);
+                // arc(this.x+6, this.y+15.5, 10.1, 3, 0, 180);
+                // arc(this.x+18.5, this.y+15.5, 10.1, 3, 180, 360);
+                fill(255, 255, 255);
+                noStroke();
+                rect(this.x, this.y, 25, 5);
+                //arc(this.x+12.5, this.y+1.5, 20, 11, 0, 180);
+            }
+        break;
+        case 'I2':
+            if (cam.inView) {            
+                noStroke();
+                stroke(210, 230, 255);
+                fill(210, 230, 255);
+                rect(this.x, this.y, 25, 05);
+                rect(this.x, this.y+5, 25, 10);
+                fill(195, 225, 255);
+                stroke(195, 225, 255);
+                rect(this.x, this.y+15, 25, 10);
+                noFill();
+                strokeWeight(2.75);
+                stroke(105, 35, 0);
+                // arc(this.x+6, this.y+15.5, 10.1, 3, 0, 180);
+                // arc(this.x+18.5, this.y+15.5, 10.1, 3, 180, 360);
+            }
+            
+        break;
+        case 'spike':
+            if (cam.inView) {
+                stroke(120, 120, 120);
+                fill(82, 82, 82);
+                triangle(this.x, this.y + 25, this.x + 12.5, this.y, this.x + 25, this.y + 25);
+            }
+        break;
+        case 'portal':
+            if (cam.inView) {
+                fill(86,44,0);
+                strokeWeight(5);
+                stroke(88,88,88);
+                bezier(this.x + 70, this.y+25, this.x + 70, this.y - 95, this.x - 10, this.y - 95, this.x, this.y+25);
+                noFill();
+                strokeWeight(2);
+                stroke(88,88,88);
+                ellipse(this.x +50, this.y - 15, 15, 15);
+                fill(88, 88, 88);
+                ellipse(this.x+  47.5, this.y - 20, 5, 5);
+                ellipse(this.x + 52.5, this.y - 20, 5, 5);
+                fill(88,88,88);
+                rect(this.x+3,this.y- 35, 57.5, 2.5);
+                rect(this.x+3,this.y, 61.5, 2.5);
+            }
+        break;
+        case 'bPortal':
+            if (cam.inView) {
+                if ((frameCount % 30) < 27.5) { 
+                    fill(86,44,0);
+                } else if ((frameCount % 30) >= 27.5) {
+                    fill(66, 66, 66);
+                }
+                strokeWeight(5);
+                if ((frameCount % 30) < 27.5) { 
+                    stroke(88, 88, 88);
+                } else if ((frameCount % 30) >= 27.5) {
+                    stroke(66, 66, 66);
+                }
+                bezier(this.x + 70, this.y+25, this.x + 70, this.y - 95, this.x - 10, this.y - 95, this.x, this.y+25);
+                noFill();
+                strokeWeight(2);
+                if ((frameCount % 30) < 27.5) { 
+                    fill(86,88,88);
+                } else if ((frameCount % 30) >= 27.5) {
+                    fill(66, 66, 66);
+                }
+                ellipse(this.x +50, this.y - 15, 15, 15);
+                // fill(88, 88, 88);
+                ellipse(this.x+  47.5, this.y - 20, 5, 5);
+                ellipse(this.x + 52.5, this.y - 20, 5, 5);
+                // fill(88,88,88);
+                rect(this.x+3,this.y- 35, 57.5, 2.5);
+                rect(this.x+3,this.y, 61.5, 2.5);
+            }
+        break;
+        case 'coin':
+            if (cam.inView) {
+                pushMatrix();
+                    translate(this.x + 12.5, this.y + 12.5);
+                    rotate(r);
+                    noStroke();
+                    fill(255, 234, 0);
+                    ellipse(0, 0, 20, 20);
+                    fill(200, 200, 0);
+                    ellipse(0, 0, 12, 12);
+                    rectMode(CENTER);
+                    fill(255, 230, 0);
+                    rect(0, 0, 4, 6);
+                    rectMode(LEFT);
+                    r += 0.5;
+                popMatrix();
+            }
+        break;
+        case 'enemy1':
+            if (cam.inView) {
+                noStroke();
+                fill(255, 140, 0);
+                rect(this.x + meX, this.y, 50, 50, 10);
+                stroke(0, 0, 0);
+                fill(255, 255, 255);
+                ellipse(this.x + 15 + meX, this.y + 17, 15, 15);
+                ellipse(this.x + 35 + meX, this.y + 17, 15, 15);
+                fill(0, 0, 0);
+                if (mePX) {
+                ellipse(this.x + 18 + meX, this.y + 17, 7.5, 7.5);
+                ellipse(this.x + 37 + meX, this.y + 17, 7.5, 7.5);
+                }
+                if (!mePX) {
+                    ellipse(this.x + 13 + meX, this.y + 17, 7.5, 7.5);
+                ellipse(this.x +  32+ meX, this.y + 17, 7.5, 7.5);
+                }
+                arc(this.x + meX + 25, this.y + 35, 30, 3, 180, 360);
+                fill(237, 237, 237);
+                triangle(this.x + meX + 12.5, this.y + 35, this.x + meX + 20, this.y +35, this.x + meX + 16, this.y + 40);
+                triangle(this.x + meX + 32.5, this.y + 35, this.x + meX + 40, this.y +35, this.x + meX + 36, this.y + 40);
+                
+                if (meX > 25) {
+                    mePX = false;
+                } else if (meX < -25) {
+                    mePX = true;
+                }
+                
+                if (mePX) {
+                    meX += 0.25;
+                } else {
+                    meX -= 0.25;
+                }
+            }
+        break;
+        case 'enemy2':
+            if (cam.inView) {
+                        if ((frameCount % 60) <= 30) {
+            fill(255, 140, 0);
+        } else {
+            fill(255, 100, 0);
+        }
+            pushMatrix();
+                scale(0.5, 0.5);
+                translate(0, 450);
+            rect(this.x + meX, this.y, 80, 80, 10);
+            
+            stroke(0, 0, 0);
+            strokeWeight(3);
+            fill(255, 255, 255);
+            ellipse(this.x + 23 + meX, this.y + 25, 24, 24);
+            ellipse(this.x + 56 + meX, this.y + 25, 24, 24);
+            fill(0, 0, 0);
+            if (mePX) {
+                ellipse(this.x + 27 + meX, this.y + 25, 12, 12);
+                ellipse(this.x + 58 + meX, this.y + 25, 12, 12);                }
+            if (!mePX) {
+                ellipse(this.x + 20 + meX, this.y + 25, 12, 12);
+                ellipse(this.x + 53 + meX, this.y + 25, 12, 12);
+            }
+            noFill();
+            strokeWeight(2);
+            arc(this.x + meX + 40, this.y + 62, 45, 5, 180, 360);
+            fill(204, 204, 204);
+            triangle(this.x + meX + 17.5, this.y + 59.5, this.x + meX + 25, this.y +69.5, this.x + meX + 32.5, this.y + 59.5);
+            triangle(this.x + meX + 32.5, this.y + 59.5, this.x + meX + 40, this.y + 69.5, this.x + meX + 47.5, this.y + 59.5); 
+            triangle(this.x + meX + 47.5, this.y + 59.5, this.x + meX + 55, this.y +69.5, this.x + meX + 62.5, this.y + 59.5);
+            popMatrix();
+            }
+        break;
+        case "heart" :
+                heartSymbol(this.x, this.y, 0.25, 0.25);
+        break;
+    }
+};
+}
+/** Intro **/ {
+  var Star = function() {
+  this.x = random(-width, width);
+  this.y = random(-height, height);
+  this.z = random(width);
+  this.n = random(1,5);
+  this.pz = this.z;
+
+  this.update = function() {
+    this.z = this.z - speed;
+    if (this.z < 1) {
+      this.z = width;
+      this.x = random(-width, width);
+      this.y = random(-height, height);
+      this.n = round(random(1,5));
+      this.pz = this.z;
+    }
+  };
+
+  this.show = function() {
+    fill(255);
+    noStroke();
+    strokeWeight(2);
+
+
+    introF1M-=20.02;
+    introF2M-=10.02;
+
+    switch (this.n) {
+        case 1: 
+            fill(30, 0, 255);
+            stroke(30, 0, 255);
+        break;
+        case 2:
+            fill(162, 0, 255);
+            stroke(153, 0, 255);
+        break;
+        case 3:
+            fill(0, 187, 255);
+            stroke(0, 190, 255);
+        break;
+        case 4:
+            fill(204, 0, 255);
+            stroke(204, 0, 255);
+        break;
+        case 5:
+            fill(235, 250, 255);
+            stroke(235, 250, 255);
+        break;
+    }
+    var sx = map(this.x / this.z, 0, 1, 0, width);
+    var sy = map(this.y / this.z, 0, 1, 0, height);
+
+    var r = map(this.z, 0, width, 16, 0);
+    ellipse(sx, sy, r, r);
+
+    var px = map(this.x / this.pz, 0, 1, 0, width);
+    var py = map(this.y / this.pz, 0, 1, 0, height);
+
+    this.pz = this.z;
+
+    line(px, py, sx, sy);
+
+  };
+};
+  for (var i = 0; i < 800; i++) {
+    stars[i] = new Star();
+  }
+}
+/** Level Translator and Background**/ {
+var levelTranslator = function(currentLevel){
+    platforms = [];
+    for(var i = 0; i < levelMaps[currentLevel].length; i++){
+        for(var j = 0; j < levelMaps[currentLevel][i].length; j++){
+            switch(levelMaps[currentLevel][i][j]){
+                
+                case 'g': //1
+                    platforms.push(new Platform(j * 25, i * 25, 'G1'));
+                break;
+                case "G": //1
+                    platforms.push(new Platform(j * 25, i * 25, 'G2'));
+                break;
+                case "z": //2
+                    platforms.push(new Platform(j * 25, i * 25, 'S1'));
+                break;
+                case "Z": //2
+                    platforms.push(new Platform(j * 25, i * 25, 'S2'));
+                break;
+                case "i": //3
+                    platforms.push(new Platform(j * 25, i * 25, 'I1'));
+                break;
+                case "I": //3
+                    platforms.push(new Platform(j * 25, i * 25, 'I2'));
+                break;
+                case 's':
+                    platforms.push(new Platform(j * 25, i * 25, 'spike'));
+                break;
+                case 'e':
+                    platforms.push(new Platform(j * 25, i * 25, 'enemy1'));
+                break;
+                case 'b':
+                    platforms.push(new Platform(j * 25, i * 25,
+                    'enemy2'));
+                break;
+                case 'c':
+                    platforms.push(new Platform(j * 25, i * 25, 'coin'));
+                break;
+                case 'P':
+                    platforms.push(new Platform(j * 25, i * 25, 'portal'));
+                break;
+                case 'p':
+                    platforms.push(new Platform(j * 25, i * 25, 'bPortal'));
+                break;                
+                case 'h':
+                    platforms.push(new Platform(j * 25, i * 25, 'heart'));
+                break;
+             }
+        }
+    }
+};
+var backgroundLevelDraw = function(world) {
+    switch (world) {
+        case 1:
+        noStroke();
+        
+        fill(0, 255, 242);
+        rect(cam.x-300,cam.y-300,600,600);
+        fill(0, 240, 235);
+        arc(cam.x-225,cam.y-150,160,70,0,360);
+        arc(cam.x-75,cam.y-150,160,50,0,360);
+        arc(cam.x+75,cam.y-150,160,60,0,360);
+        arc(cam.x+225,cam.y-150,160,70,0,360);
+        rect(cam.x-300,cam.y-150,600,450);
+        fill(0, 230, 230);
+        arc(cam.x-225,cam.y-50,160,70,0,360);
+        arc(cam.x-75,cam.y-50,160,60,0,360);
+        arc(cam.x+75,cam.y-50,160,50,0,360);
+        arc(cam.x+225,cam.y-50,160,70,0,360);
+        rect(cam.x-300,cam.y-50,600,350);
+        
+        fill(147, 240, 187);
+        quad(cam.x-130,cam.y+300,cam.x-110,cam.y-85,cam.x-50,cam.y-85,cam.x-30,cam.y+300);
+        quad(cam.x+130,cam.y+300,cam.x+150,cam.y-65,cam.x+200,cam.y-65,cam.x+220,cam.y+300);
+        fill(129, 230, 141);
+        quad(cam.x-300,cam.y+300,cam.x-300,cam.y+50,cam.x-250,cam.y+50,cam.x-110,cam.y+300);
+        quad(cam.x-230,cam.y+300,cam.x-160,cam.y+70,cam.x-50,cam.y+70,cam.x+20,cam.y+300);
+        quad(cam.x-30,cam.y+300,cam.x+75,cam.y+90,cam.x+150,cam.y+90,cam.x+230,cam.y+300);
+        quad(cam.x+120,cam.y+300,cam.x+230,cam.y+60,cam.x+300,cam.y+60,cam.x+300,cam.y+300);
+        fill(54, 255, 67);
+        quad(cam.x-300,cam.y+300,cam.x-300,cam.y+130,cam.x-265,cam.y+130,cam.x-120,cam.y+300);
+        quad(cam.x-250,cam.y+300,cam.x-250,cam.y+150,cam.x-130,cam.y+150,cam.x-130,cam.y+300);
+        quad(cam.x-200,cam.y+300,cam.x-120,cam.y+80,cam.x-70,cam.y+80,cam.x+50,cam.y+300);
+        quad(cam.x-90,cam.y+300,cam.x-50,cam.y+140,cam.x+20,cam.y+140,cam.x+100,cam.y+300);
+        quad(cam.x,cam.y+300,cam.x+80,cam.y+190,cam.x+140,cam.y+190,cam.x+190,cam.y+300);
+        quad(cam.x+140,cam.y+300,cam.x+200,cam.y+80,cam.x+300,cam.y+80,cam.x+300,cam.y+300);
+        break;
+        case 2://305 705
+            noStroke();
+            
+            fill(255, 154, 0);
+            bezier(cam.x+20, cam.y+300, cam.x-160, cam.y-250, cam.x-250, cam.y-250, cam.x-395, cam.y+300);
+            bezier(cam.x+320, cam.y+200, cam.x+120, cam.y-300, cam.x+50, cam.y-220, cam.x-195, cam.y+300);
+            
+            fill(255, 191, 0);
+            bezier(cam.x+120, cam.y+300, cam.x-50, cam.y-120, cam.x-80, cam.y-140, cam.x-295, cam.y+300);
+            bezier(cam.x+390, cam.y+305, cam.x, cam.y-70, cam.x+150, cam.y-130, cam.x-100, cam.y+305);
+            
+            fill(255, 170, 0);
+            bezier(cam.x, cam.y+300, cam.x-70, cam.y+200, cam.x-450, cam.y-100, cam.x-315, cam.y+300);
+            bezier(cam.x+260, cam.y+305, cam.x-40, cam.y+40, cam.x+100, cam.y-60, cam.x-160, cam.y+305);
+            bezier(cam.x+460, cam.y+350, cam.x+360, cam.y+40, cam.x+300, cam.y-60, cam.x+40, cam.y+305);
+            
+
+        break;
+        case 3:
+            
+            stroke(150, 195, 255);
+            fill(150, 195, 255);
+            triangle(cam.x - 450, cam.y + 300, cam.x-250, cam.y -160, cam.x - 50, cam.y + 300);
+            triangle(cam.x + 0, cam.y + 300, cam.x + 200, cam.y -140, cam.x + 400, cam.y + 300);
+            triangle(cam.x - 60, cam.y + 300, cam.x + 70, cam.y -120, cam.x + 200, cam.y + 300);
+            
+            stroke(200, 220, 255);
+            fill(200, 220, 255);
+            triangle(cam.x - 350, cam.y + 300, cam.x - 200, cam.y -100, cam.x - 70, cam.y + 300);
+            triangle(cam.x - 220, cam.y + 300, cam.x - 50, cam.y -140, cam.x + 150, cam.y + 300);
+            triangle(cam.x + 10, cam.y + 300, cam.x + 120, cam.y -80, cam.x + 230, cam.y + 300);
+            triangle(cam.x + 120, cam.y + 300, cam.x + 300, cam.y -160, cam.x + 480, cam.y + 300);
+            
+            fill(255, 255, 255);
+            stroke(255, 255, 255);
+            triangle(cam.x-217.5, cam.y - 50, cam.x - 200, cam.y - 100, cam.x - 182, cam.y - 50);
+            triangle(cam.x-78, cam.y - 70, cam.x - 50, cam.y - 140, cam.x - 15, cam.y - 70);
+            triangle(cam.x+104, cam.y - 30, cam.x + 120, cam.y - 80, cam.x + 135, cam.y - 30);
+            triangle(cam.x+268, cam.y - 75, cam.x + 300, cam.y - 160, cam.x + 325, cam.y - 75);
+            triangle(cam.x - 278, cam.y - 100, cam.x - 250, cam.y - 160, cam.x - 222, cam.y - 100);
+            triangle(cam.x + 180, cam.y - 100, cam.x + 200, cam.y - 140, cam.x + 220, cam.y - 100);
+            triangle(cam.x + 52.5, cam.y - 70, cam.x + 70, cam.y - 120, cam.x + 87, cam.y - 70);
+            
+        break;
+    }
+};
+}
+/** World Map Items **/ {
+var levelSelecting = function() {
+    return keys[ENTER] || keys[32];
+};
+var levelCircle = function(x,y,a){
+    this.x = x;
+    this.y = y;
+    this.state = 0;
+    this.a = a;
+    this.draw = function() {
+        switch (this.state) {
+            case 0:
+                fill(59, 59, 59);
+            break;
+            case 1:
+                fill(0, 255, 119);
+            break;
+            case 2:
+                fill(0, 255, 119);
+            break;
+        }
+        if (this.a === 10) {
+            stroke(0, 255, 153);
+            strokeWeight(10);
+            ellipse(this.x, this.y, 81, 80);
+        } else if (this.a === 8) {
+            stroke(255, 55, 0);
+            strokeWeight(8);
+            ellipse(this.x, this.y, 75, 74);
+        } else {
+            stroke(251, 255, 0);
+            strokeWeight(5);
+            ellipse(this.x, this.y, 65, 64);
+        }
+        if (this.state === 2) {
+            crownSymbol(this.x-56,this.y+58,0.25,0.22);
+        }
+        
+            
+        
+    };
+};
+var levelRoad = function(x, y, w, h, world){
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.state = 1;
+    this.world = world;
+    this.draw = function() {
+        switch (this.state) {
+            case 0:
+                noFill();
+            break;
+            case 1:
+                switch (this.world) {
+                    case 1:
+                        fill(125, 125, 125);
+                    break;
+                    case 2:
+                        fill(255, 255, 0);
+                    break;
+                    case 3:
+                        fill(250, 250, 255);
+                    break;
+                    case 4:
+                        fill(255, 153, 0);
+                    break;
+                    case 5:
+                        fill(41, 248, 255);
+                    break;
+                }
+            break;
+        }
+        noStroke();
+        rect(this.x, this.y, this.w, this.h);
+    };
+};
+var lc1_0 = new levelCircle(50,-50);
+var lc1_1 = new levelCircle(300, -50);
+    lc1_1.state = 1;
+var lc1_2 = new levelCircle(550, -200);
+var lc1_3 = new levelCircle(50, -200);
+var lc2_1 = new levelCircle(300, -550);
+var lc2_2 = new levelCircle(620, -550);
+var lc2_3 = new levelCircle(920, -550);
+var lc3_1 = new levelCircle(920, -250);
+var lc3_2 = new levelCircle(670, -250);
+var lc3_3 = new levelCircle(670, -50);
+var lc4_1 = new levelCircle(1115, -200, 8);
+var lc5_1 = new levelCircle(1115, -500, 10);
+var rc1_a = new levelRoad(50,-75,250,50,1);
+var rc1_b = new levelRoad(275, -75, 50, -325,1);
+var rc1_c = new levelRoad(50, -225, 500, 50, 1);
+var rc2_a = new levelRoad(275, -400, 50, -150, 2);
+var rc2_b = new levelRoad(325, -525, 300, -50, 2);
+var rc2_c = new levelRoad(595, -450, 50, -100, 2);
+var rc2_d = new levelRoad(595, -425, 150, -50, 2);
+var rc2_e = new levelRoad(745, -425, 50, -150, 2);
+var rc2_f = new levelRoad(795, -525, 150, -50, 2);
+var rc2_g = new levelRoad(895, -400, 50, -170, 2);
+var rc3_a = new levelRoad(895, -400, 50, 150, 3);
+var rc3_b = new levelRoad(670, -275, 275, 50, 3);
+var rc3_c = new levelRoad(645, -275, 50, 250, 3);
+var rc3_d = new levelRoad(670, -75, 330, 50, 3);
+var rc4_a = new levelRoad(1002, -75, 137.5, 50, 4);
+var rc4_b = new levelRoad(1090, -75, 50, -325, 4);
+var rc5_a = new levelRoad(1090, -400, 50, -75, 5);
+}
+/** Player and Map Player **/ {
+var MapPlayer = function(){
+    this.x = 30;
+    this.y = -70; 
+    this.w = 40;
+    this.h = 40;
+    this.drawRunR1 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-6.4);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 30);
+            rotate(70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 27, this.y + 33);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 5, this.y + 22);
+            rotate(300);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) + 1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL1 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-6.4);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 23, this.y + 39);
+            rotate(-70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 10, this.y + 28);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1,1);
+            translate(-this.x - 35, this.y + 23.5);
+            rotate(300);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawStand = function(){
+        noStroke();
+
+        pushMatrix();
+            translate(0, -5);
+            //legs
+            fill(255, 70, 70);
+            rect(this.x + (15*(5/8)), this.y + (50*(5/8)) - 2.5, 14*(5/8), 24*(5/8), 10);
+            rect(this.x + (40*(5/8)), this.y + (50*(5/8)) - 2.5 , 14*(5/8), 24*(5/8), 10);
+            // //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x - (3*(5/8)), this. y + (40*(5/8)));
+            rotate(-30);
+            fill(255, 50, 50);
+            rect(2, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x, this. y + (20*(5/8)));
+            rotate(10);
+            fill(255, 50, 50);
+            rect(2, 0, 13*(5/8), 23*(5/8), 10);
+            fill(255, 90, 90);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x - (3*(5/8)), this. y + (40*(5/8)));
+            rotate(-30);
+            fill(255, 90, 90);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)), this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)), this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+        
+    };
+    this.update = function(){
+            if(keys[LEFT]){
+                switch (this.y) {
+                    case -50 - 20:
+                        if ((this.x > 50 - 20 && this.x <= 280)||(this.x>649)) {
+                            this.x -= 3;  
+                        }
+                    break;
+                    case - 200 - 20:
+                        if (this.x > 50 - 20) {
+                            this.x -= 3;  
+                        }
+                    break;
+                    case - 571:
+                        if ((this.x > 280&&this.x <= 601)||((this.x > 751))) {
+                            this.x -= 3;
+                        }
+                    break;
+                    case -472:
+                        if (this.x > 601 && this.x <= 751) {
+                            this.x -= 3;
+                        }
+                    break;
+                    case -271:
+                        if (this.x > 651) {
+                            this.x -= 3;
+                        }
+                    break;
+                }
+                
+                //intersections
+                if ((abs(dist(this.x, this.y, this.x, -220))) < 10) {
+                    this.y = -220;
+                }
+            }
+            if(keys[RIGHT]){
+                switch (this.y) {
+                    case -50 - 20:
+                        if ((this.x < 300 - 20)||((this.x>=649)&&(this.x<1096))) {
+                            this.x += 3;  
+                        }
+                    break;
+                    case - 200 - 20:
+                        if (this.x < 550 - 20) {
+                            this.x += 3;  
+                        }
+                    break;
+                    case - 571:
+                        if ((this.x < 600)||(this.x>750 && this.x < 900)) {
+                            this.x += 3;
+                        }
+                    break;
+                    case -472:
+                        if (this.x > 280 && this.x < 750) {
+                            this.x += 3;
+                        }
+                    break;
+                    case -271:
+                        if (this.x >= 649 && this.x < 901) {
+                            this.x += 3;
+                        }
+                    break;
+                }
+                
+                //intersections
+                if ((abs(dist(this.x, this.y, this.x, -220))) < 10) {
+                    this.y = -220;
+                }
+                
+            }
+            if(keys[UP]){
+                switch (this.x) {
+                    case 300 - 20:
+                        if (this.y > -550 - 20) {
+                            this.y -=3;
+                        }
+                    break;
+                    case 601:
+                        if (this.y > -571) {
+                            this.y -=3;
+                        }
+                    break;
+                    case 751:
+                        if (this.y <= -472 && this.y > -571) {
+                            this.y -=3;
+                        }
+                    break;
+                    case 901:
+                        if (this.y > -571) {
+                            this.y -=3;
+                        }
+                    break;
+                    case 649:
+                        if (this.y > -271) {
+                            this.y -= 3;
+                        }
+                    break;
+                    case 1096:
+                        if (this.y > -521) {
+                            this.y -= 3;
+                        }
+                    break;
+                }
+                
+                //intersections
+                if ((abs(dist(this.x, this.y, 280, this.y))) < 10) {
+                    this.x = 280;
+                }
+            }
+            if(keys[DOWN]){
+                switch (this.x) {
+                    case 300 - 20:
+                        if (this.y < -50 - 20) {
+                            this.y +=3;
+                        }
+                    break;
+                    case 601:
+                        if (this.y < -472) {
+                            this.y +=3;
+                        }
+                    break;
+                    case 751:
+                        if (this.y < -472) {
+                            this.y +=3;
+                        }
+                    break;
+                    case 901:
+                        if (this.y < -272) {
+                            this.y +=3;
+                        }
+                    break;
+                    case 649:
+                        if (this.y >= -271 && this.y < -72) {
+                            this.y += 3;
+                        }
+                    break;
+                    case 1096:
+                        if (this.y < -71) {
+                            this.y += 3;
+                        }
+                    break;
+                }
+                
+                //intersections
+                if ((abs(dist(this.x, this.y, 280, this.y))) < 10) {
+                    this.x = 280;
+                }
+            }
+            
+            if(keys[LEFT] && (!keys[RIGHT])) {
+                pushMatrix();
+                translate(0, 5);
+                this.drawRunL1();
+                popMatrix();
+            }
+            if(keys[RIGHT] && (!keys[LEFT])) {
+            pushMatrix();
+                translate(0, 5);
+                this.drawRunR1();
+                popMatrix();
+            }
+            if((keys[LEFT] && keys[RIGHT]) || (!keys[LEFT] && !keys[RIGHT]) ) {
+                pushMatrix();
+                translate(0, 5);
+                this.drawStand();
+                popMatrix();
+            }
+            
+    };
+    
+};
+var mp = new MapPlayer();
+var Player = function(){
+    this.x = 4;
+    this.y = 360;
+    this.w = 40;
+    this.h = 40;
+    this.xvel = 0;
+    this.yvel = 0;
+    this.falling = true;
+    this.timerDead = 0;
+    this.gravity = 0.4;
+    this.jumpHeight = 8;
+    this.maxFallSpeed = 12;
+    this.moveSpeed = 0.5;
+    this.maxMoveSpeed = 5;
+    this.dead = false;
+    this.portaling = false;
+    //adapted from https://assetstore.unity.com/packages/2d/environments/free-platform-game-assets-85838
+    this.drawStand = function(){
+        noStroke();
+    
+        pushMatrix();
+            translate(0, -5);
+            //legs
+            fill(255, 70, 70);
+            rect(this.x + (15*(5/8)), this.y + (50*(5/8)) - 2.5, 14*(5/8), 24*(5/8), 10);
+            rect(this.x + (40*(5/8)), this.y + (50*(5/8)) - 2.5 , 14*(5/8), 24*(5/8), 10);
+            // //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x - (3*(5/8)), this. y + (40*(5/8)));
+            rotate(-30);
+            fill(255, 50, 50);
+            rect(2, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x, this. y + (20*(5/8)));
+            rotate(10);
+            fill(255, 50, 50);
+            rect(2, 0, 13*(5/8), 23*(5/8), 10);
+            fill(255, 90, 90);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x - (3*(5/8)), this. y + (40*(5/8)));
+            rotate(-30);
+            fill(255, 90, 90);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)), this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)), this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+        
+    };
+    this.drawDie = function(){
+        noStroke();
+
+        pushMatrix();
+            translate(0, -5);
+            //legs
+            if ((frameCount % 60) <= 30) {
+                fill(255, 46, 46);
+            } else {
+                fill(255, 61, 61);
+            }
+            rect(this.x + (15*(5/8)), this.y + (50*(5/8)) - 2.5, 14*(5/8), 24*(5/8), 10);
+            rect(this.x + (40*(5/8)), this.y + (50*(5/8)) - 2.5 , 14*(5/8), 24*(5/8), 10);
+            // //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 46, 46);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            if ((frameCount % 20) <= 10) {
+                fill(255, 76, 76);
+            } else {
+                fill(255, 150, 150);
+            }
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x - (3*(5/8)), this. y + (40*(5/8)));
+            rotate(-30);
+            fill(255, 50, 50);
+            rect(2, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x, this. y + (20*(5/8)));
+            rotate(10);
+            fill(255, 50, 50);
+            rect(2, 0, 13*(5/8), 23*(5/8), 10);
+            fill(255, 90, 90);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x - (3*(5/8)), this. y + (40*(5/8)));
+            rotate(-30);
+            fill(255, 90, 90);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)), this.y + (20*(5/8)), 13*(5/8), 13*(5/8));
+            ellipse(this.x + (52*(5/8)), this.y + (20*(5/8)), 13*(5/8), 13*(5/8));
+        popMatrix();
+    };
+    this.drawRunR1 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-6.4);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 30);
+            rotate(70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 27, this.y + 33);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 5, this.y + 22);
+            rotate(300);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) + 1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR2 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-6.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 30);
+            rotate(60);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 27, this.y + 35);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 5, this.y + 20);
+            rotate(310);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) + 1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR3 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-7.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 28);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 27, this.y + 31);
+            rotate(-10);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 6, this.y + 18.5);
+            rotate(320);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+ 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR4 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-9);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 12, this.y + 27);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 25, this.y + 32);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 5, this.y + 17);
+            rotate(330);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) +2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) +1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR5 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 30);
+            rotate(5);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 20, this.y + 35);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 5, this.y + 17);
+            rotate(340);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR6 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 35);
+            rotate(6);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 20, this.y + 30);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 5, this.y + 16.5);
+            rotate(347.5);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR7 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 10, this.y + 31);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 20, this.y + 32);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 30, this.y + 19);
+            rotate(350);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-30);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            pushMatrix();
+            translate(this.x + 5, this.y + 15);
+            rotate(0);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR8 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 10, this.y + 31);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 23, this.y + 34);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 30, this.y + 19);
+            rotate(333);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-30);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            pushMatrix();
+            translate(this.x + 6, this.y + 14);
+            rotate(20);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR9 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 10, this.y + 31);
+            rotate(30);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 23, this.y + 34);
+            rotate(-45);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 31, this.y + 22);
+            rotate(310);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-30);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            pushMatrix();
+            translate(this.x + 6, this.y + 14);
+            rotate(35);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR10 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-6.4);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 30);
+            rotate(70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 27, this.y + 33);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 32, this.y + 21);
+            rotate(300);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9.5);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 6, this.y + 14);
+            rotate(55);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) + 1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR11 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-6.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 30);
+            rotate(70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 27, this.y + 33);
+            rotate(-35);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+                        //r. arm
+            
+            pushMatrix();
+            translate(this.x + 32, this.y + 22);
+            rotate(300);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9.5);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 6, this.y + 14);
+            rotate(55);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) + 1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR12 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-7.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 28);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 27, this.y + 31);
+            rotate(-10);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 32, this.y + 22);
+            rotate(310);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 6, this.y + 14);
+            rotate(45);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR13 = function(){
+        noStroke();
+        pushMatrix();
+                        translate(0,-9);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 12, this.y + 27);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 25, this.y + 32);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 30.5, this.y + 20.5);
+            rotate(325);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 6, this.y + 14);
+            rotate(40);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+ 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR14 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 30);
+            rotate(5);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 20, this.y + 35);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 30.5, this.y + 21);
+            rotate(330);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 6, this.y + 13);
+            rotate(30);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) +2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) +1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR15 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 15, this.y + 35);
+            rotate(6);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 20, this.y + 30);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            translate(this.x + 28, this.y + 20);
+            rotate(340);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 6, this.y + 14);
+            rotate(15);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR16 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 10, this.y + 31);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 20, this.y + 32);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            // //r. arm
+            
+            // pushMatrix();
+            // translate(this.x + 26, this.y + 21);
+            // rotate(350);
+            
+            // pushMatrix();
+            // fill(255, 50, 50);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // pushMatrix();
+            // translate(-2.5, 9);
+            // rotate(-40);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 3.5, this.y + 14);
+            rotate(340);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8))+2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8))+1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR17 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 10, this.y + 31);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 23, this.y + 34);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 5, this.y + 18);
+            rotate(335);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) + 1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunR18 = function(){
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 10, this.y + 31);
+            rotate(30);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 23, this.y + 34);
+            rotate(-45);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x + (10*(5/8)), this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            translate(this.x + 4, this.y + 18);
+            rotate(320);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) + 2, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) + 1, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL1 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-6.4);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 23, this.y + 39);
+            rotate(-70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 10, this.y + 28);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1,1);
+            translate(-this.x - 35, this.y + 23.5);
+            rotate(300);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL2 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-6.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 25, this.y + 37);
+            rotate(-60);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 10, this.y + 29);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 36.5, this.y + 20);
+            rotate(310);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL3 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-7.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 21, this.y + 33);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 5, this.y + 29);
+            rotate(10);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 34, this.y + 18.5);
+            rotate(320);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL4 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-9);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 22, this.y + 31);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 7, this.y + 32);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 34, this.y + 17);
+            rotate(330);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL5 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 20, this.y + 30);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 15, this.y + 35);
+            rotate(5);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 32, this.y + 15);
+            rotate(340);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL6 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 20, this.y + 35);
+            rotate(6);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 12, this.y + 30);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            // fill(255, 50, 50);
+            // rect(this.x + (55*(5/8)), this.y + (25*(5/8)), 13*(5/8), 23*(5/8), 10);
+            // pushMatrix();
+            // translate(this.x + (52*(5/8)), this.y + (38*(5/8)));
+            // rotate(-30);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 32, this.y + 15);
+            rotate(340);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL7 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 22, this.y + 33);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 12, this.y + 29);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 10, this.y + 20);
+            rotate(350);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-30);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 35, this.y + 15);
+            rotate(0);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL8 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 23, this.y + 34);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 12, this.y + 30);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 8, this.y + 19);
+            rotate(333);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-30);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            // l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 32, this.y + 14);
+            rotate(20);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL9 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 23, this.y + 35);
+            rotate(-30);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 11, this.y + 28);
+            rotate(45);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 8, this.y + 22);
+            rotate(310);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-30);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            // l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 33, this.y + 14);
+            rotate(35);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL10 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-6.4);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 23, this.y + 39);
+            rotate(-70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 8.5, this.y + 28);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 7, this.y + 21);
+            rotate(300);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9.5);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            // l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 33.5, this.y + 14);
+            rotate(55);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL11 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-6.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 25, this.y + 39);
+            rotate(-70);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 7.5, this.y + 29);
+            rotate(35);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 7, this.y + 21);
+            rotate(300);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9.5);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            // l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 33.5, this.y + 14);
+            rotate(55);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL12 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-7.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 20, this.y + 34);
+            rotate(-40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 7, this.y + 30);
+            rotate(10);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 7.5, this.y + 22);
+            rotate(310);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 30, this.y + 14);
+            rotate(45);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL13 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-9);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 22, this.y + 31);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 8, this.y + 32);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 8, this.y + 20.5);
+            rotate(325);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 32, this.y + 14);
+            rotate(40);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-40);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL14 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 20, this.y + 30);
+            rotate(-5);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 14, this.y + 35);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1,1);
+            translate(-this.x - 8, this.y + 21);
+            rotate(330);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 33, this.y + 13);
+            rotate(30);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL15 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-12.5);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 14, this.y + 30);
+            rotate(-5);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 20, this.y + 35);
+            rotate(0);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            //r. arm
+            
+            pushMatrix();
+            scale(-1,1);
+            translate(-this.x - 11, this.y + 21);
+            rotate(330);
+            
+            pushMatrix();
+            fill(255, 50, 50);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-2.5, 9);
+            rotate(-40);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 33, this.y + 13);
+            rotate(30);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(15);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL16 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 22, this.y + 34.5);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 10, this.y + 29);
+            rotate(20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            // //r. arm
+            
+            // pushMatrix();
+            // scale(-1,1);
+            // translate(-this.x - 11, this.y + 21);
+            // rotate(330);
+            
+            // pushMatrix();
+            // fill(255, 50, 50);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // pushMatrix();
+            // translate(-2.5, 9);
+            // rotate(-40);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 36, this.y + 14);
+            rotate(340);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL17 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 25, this.y + 34);
+            rotate(-20);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 12, this.y + 28);
+            rotate(40);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            // //r. arm
+            
+            // pushMatrix();
+            // scale(-1,1);
+            // translate(-this.x - 11, this.y + 21);
+            // rotate(330);
+            
+            // pushMatrix();
+            // fill(255, 50, 50);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // pushMatrix();
+            // translate(-2.5, 9);
+            // rotate(-40);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 35, this.y + 18);
+            rotate(335);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.drawRunL18 = function() {
+        noStroke();
+        pushMatrix();
+            translate(0,-10);
+            //legs
+            fill(255, 70, 70);
+            pushMatrix();
+            translate(this.x + 24, this.y + 36);
+            rotate(-30);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(this.x + 13, this.y + 28);
+            rotate(45);
+            rect(0, 0, 14*(5/8), 24*(5/8), 10);
+            popMatrix();
+            
+            // //r. arm
+            
+            // pushMatrix();
+            // scale(-1,1);
+            // translate(-this.x - 11, this.y + 21);
+            // rotate(330);
+            
+            // pushMatrix();
+            // fill(255, 50, 50);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // pushMatrix();
+            // translate(-2.5, 9);
+            // rotate(-40);
+            // rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            // popMatrix();
+            
+            // popMatrix();
+            
+            //body
+            fill(255, 70, 70);
+            rect(this.x, this.y, 64*(5/8), 64*(5/8), 20);
+            fill(255, 100, 100);
+            rect(this.x, this.y, 53*(5/8), 55*(5/8), 10);
+            
+            //l. arm
+            pushMatrix();
+            scale(-1, 1);
+            translate(-this.x - 35, this.y + 18);
+            rotate(335);
+
+            pushMatrix();
+            translate(0, 0);
+            rotate(10);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            pushMatrix();
+            translate(-(3*(5/8)),(20*(5/8)));
+            rotate(-30);
+            fill(255, 120, 120);
+            rect(0, 0, 13*(5/8), 23*(5/8), 10);
+            popMatrix();
+            
+            popMatrix();
+            
+            // eyes
+            fill(105, 0, 0);
+            ellipse(this.x + (26*(5/8)) - 8, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+            ellipse(this.x + (52*(5/8)) - 9, this.y + (20*(5/8)), 10*(5/8), 10*(5/8));
+        popMatrix();
+    };
+    this.update = function(platforms){
+        
+        if (!this.portaling || this.dead) {
+            this.gravity = 0.4;
+        }
+        if (!this.dead) {
+            if(keys[LEFT] && (!keys[RIGHT])){
+                this.xvel -= this.moveSpeed;
+                if (!this.falling) {
+                    if ((frameCount % t_sAT) < (1+sAT*1)) {
+                        this.drawRunL1();
+                    } else if ((frameCount % t_sAT) < (1+sAT*2)) {
+                        this.drawRunL2();
+                    } else if ((frameCount % t_sAT) < (1+sAT*3)) {
+                        this.drawRunL3();
+                    } else if ((frameCount % t_sAT) < (1+sAT*4)) {
+                        this.drawRunL4();
+                    } else if ((frameCount % t_sAT) < (1+sAT*5)) {
+                        this.drawRunL5();
+                    } else if ((frameCount % t_sAT) < (1+sAT*6)) {
+                        this.drawRunL6();
+                    } else if ((frameCount % t_sAT) < (1+sAT*7)) {
+                        this.drawRunL7();
+                    } else if ((frameCount % t_sAT) < (1+sAT*8)) {
+                        this.drawRunL8();
+                    } else if ((frameCount % t_sAT) < (1+sAT*9)) {
+                        this.drawRunL9();
+                    } else if ((frameCount % t_sAT) < (1+sAT*10)) {
+                        this.drawRunL10();
+                    } else if ((frameCount % t_sAT) < (1+sAT*11)) {
+                        this.drawRunL11();
+                    } else if ((frameCount % t_sAT) < (1+sAT*12)) {
+                        this.drawRunL12();
+                    } else if ((frameCount % t_sAT) < (1+sAT*13)) {
+                        this.drawRunL13();
+                    } else if ((frameCount % t_sAT) < (1+sAT*14)) {
+                        this.drawRunL14();
+                    } else if ((frameCount % t_sAT) < (1+sAT*15)) {
+                        this.drawRunL15();
+                    } else if ((frameCount % t_sAT) < (1+sAT*16)) {
+                        this.drawRunL16();
+                    } else if ((frameCount % t_sAT) < (1+sAT*17)) {
+                        this.drawRunL17();
+                    } else if ((frameCount % t_sAT) < (1+sAT*18)) {
+                        this.drawRunL18();
+                    } 
+                } else {
+                    this.drawRunL1();
+                } 
+            }
+
+            if(keys[RIGHT]&& (!keys[LEFT])){
+                this.xvel += this.moveSpeed;
+                if (!this.falling) {
+                    if ((frameCount % t_sAT) < (1+sAT*1)) {
+                        this.drawRunR1();
+                    } else if ((frameCount % t_sAT) < (1+sAT*2)) {
+                        this.drawRunR2();
+                    } else if ((frameCount % t_sAT) < (1+sAT*3)) {
+                        this.drawRunR3();
+                    } else if ((frameCount % t_sAT) < (1+sAT*4)) {
+                        this.drawRunR4();
+                    } else if ((frameCount % t_sAT) < (1+sAT*5)) {
+                        this.drawRunR5();
+                    } else if ((frameCount % t_sAT) < (1+sAT*6)) {
+                        this.drawRunR6();
+                    } else if ((frameCount % t_sAT) < (1+sAT*7)) {
+                        this.drawRunR7();
+                    } else if ((frameCount % t_sAT) < (1+sAT*8)) {
+                        this.drawRunR8();
+                    } else if ((frameCount % t_sAT) < (1+sAT*9)) {
+                        this.drawRunR9();
+                    } else if ((frameCount % t_sAT) < (1+sAT*10)) {
+                        this.drawRunR10();
+                    } else if ((frameCount % t_sAT) < (1+sAT*11)) {
+                        this.drawRunR11();
+                    } else if ((frameCount % t_sAT) < (1+sAT*12)) {
+                        this.drawRunR12();
+                    } else if ((frameCount % t_sAT) < (1+sAT*13)) {
+                        this.drawRunR13();
+                    } else if ((frameCount % t_sAT) < (1+sAT*14)) {
+                        this.drawRunR14();
+                    } else if ((frameCount % t_sAT) < (1+sAT*15)) {
+                        this.drawRunR15();
+                    } else if ((frameCount % t_sAT) < (1+sAT*16)) {
+                        this.drawRunR16();
+                    } else if ((frameCount % t_sAT) < (1+sAT*17)) {
+                        this.drawRunR17();
+                    } else if ((frameCount % t_sAT) < (1+sAT*18)) {
+                        this.drawRunR18();
+                    } 
+                } else {
+                    this.drawRunR1();
+                } 
+            } else { 
+                // this.drawStand();
+            }
+            if((!keys[LEFT] && !keys[RIGHT]) || (keys[LEFT] && keys[RIGHT])){
+                if(this.xvel > 0){
+                    this.xvel -= this.moveSpeed;
+                }
+                if(this.xvel < 0){
+                    this.xvel += this.moveSpeed;
+                }
+                if(this.xvel < 0.1 && this.xvel > 0){
+                    this.xvel = 0;
+                }
+                if(this.xvel > -0.1 && this.xvel < 0){
+                    this.xvel = 0;
+                }
+                this.drawStand();
+            }
+            if(keys[UP] && !this.falling){
+                this.yvel = -this.jumpHeight;
+            }
+        }
+        if (!this.portaling || !this.dead) {
+            this.yvel += this.gravity;
+        }
+        if(this.yvel > this.maxFallSpeed){
+            this.yvel = this.maxFallSpeed;
+        }
+        if(this.xvel > this.maxMoveSpeed){
+            this.xvel = this.maxMoveSpeed;
+        }
+        if(this.xvel < -this.maxMoveSpeed){
+            this.xvel = -this.maxMoveSpeed;
+        }
+        
+        this.x += this.xvel;
+        this.collideWith(this.xvel, 0, platforms);
+        this.falling = true;
+        this.y += this.yvel;
+        this.collideWith(0, this.yvel, platforms);
+        if (this.x < 0) {
+            this.x = 0.1;
+        }
+        if (this.x + this.w > (levelMaps[currentLevel][(levelMaps[currentLevel].length-1)].length)*25) {
+          this.x = (levelMaps[currentLevel][(levelMaps[currentLevel].length-1)].length)*25 - 40.1;
+        }
+        // if (this.y < 575) {
+        //     this.y = 575;
+        // }
+        
+        if (this.timerDead > 0) {
+            this.timerDead++;
+            this.drawDie();
+            if (this.timerDead < 75) {
+                this.dead = true;
+                this.xvel = 0;
+                this.yvel = 0;
+                this.gravity = 0;
+            } else {
+                this.dead = false;
+                this.timerDead = 0;
+                deaths += 1;
+                this.x = 5;
+                this.y = 350;
+                realTimer = 15;
+            }
+        }
+    };
+    this.collideWith = function(xv, yv, platforms){
+        for (var i = 0; i < platforms.length; i++){
+            var p = platforms[i];
+            if(this.y + this.h > p.y && this.y < p.y + p.h && this.x + this.w > p.x && this.x < p.x + p.w && p.type !== 'movingGrassX' && p.type !== 'enemy1'){
+                if (p.type === 'spike' || p.type === 'lavaWave' || p.type === 'lavaBlock'){
+                        this.timerDead++;
+                        if (this.timerDead < 75) {
+                            this.dead = true;
+                            this.xvel = 0;
+                            this.yvel = 0;
+                            this.gravity = 0;
+                        } else {
+                            this.dead = false;
+                            this.timerDead = 0;
+                            deaths += 1;
+                            if (points >= 300) {
+                                points -= 300;
+                            } else {
+                                points = 0;
+                            }
+                            this.x = 5;
+                            this.y = 350;
+                            realTimer = 15;
+                        }
+                } else if (p.type === 'portal') {
+                    if (keys[ENTER] || keys[32]) {
+                        switch (mode) {
+                            case "1-1":
+                                lc1_1.state = 2;
+                                lc1_2.state = 1;
+                                crowns = 1;
+                            break;
+                            case "1-2":
+                                lc1_2.state = 2;
+                                lc1_3.state = 1;
+                                crowns = 2;
+                            break;
+                            case "bossA":
+                                lc1_3.state = 2;
+                                lc2_1.state = 1;
+                                crowns = 5;
+                            break;
+                            case "2-1":
+                                lc2_1.state = 2;
+                                lc2_2.state= 1;
+                                crowns = 7;
+                            break;
+                            case "2-2":
+                                lc2_2.state = 2;
+                                lc2_3.state= 1;
+                                crowns = 9;
+                            break;
+                            case "bossB":
+                                lc2_3.state = 2;
+                                lc3_1.state= 1;
+                            break;
+                            case "3-1":
+                                lc3_1.state = 2;
+                                lc3_2.state= 1;
+                                crowns = 15;
+                            break;
+                            case "3-2":
+                                lc3_2.state = 2;
+                                lc3_3.state= 1;
+                                crowns = 18;
+                            break;
+                            case "bossC":
+                                lc3_3.state = 2;
+                                lc4_1.state= 1;
+                                crowns = 21;
+                            break;
+                            case "4-1":
+                                lc4_1.state = 2;
+                                lc5_1.state= 1;
+                                crowns = 25;
+                            break;
+                            case "5-1":
+                                lc5_1.state = 2;
+                                crowns = 30;
+                            break;
+                        }
+                        transitions.active = true;
+                        
+                        if (mode !== "5-1" && mode !== "bossA" && mode !== "bossB" && mode !== "bossC" && mode !== "4-1") {
+                            transitions.next = "worldMap";
+                        }  else {
+                            transitions.next = "menu";
+                            mp.x = 30;
+                            mp.y = -70;
+                        }
+                        realTimer = 15;
+                    }
+                } else if (p.type === 'bPortal') {
+                     if (keys[ENTER] || keys[32]) {
+                        switch (mode) {
+                            case "1-3":
+                                transitions.active = true;
+                                transitions.next = "bossA";
+                                this.x = 4;
+                                this.y = 350;
+                                currentLevel = 3;
+                                levelTranslator(currentLevel);
+                            break;
+                            case "2-3":
+                                transitions.active = true;
+                                transitions.next = "bossB";
+                                this.x = 4;
+                                this.y = 350;
+                                currentLevel = 7;
+                                levelTranslator(currentLevel);
+                            break;
+                            case "3-3":
+                                transitions.active = true;
+                                transitions.next = "bossC";
+                                this.x = 4;
+                                this.y = 350;
+                                currentLevel = 11;
+                                levelTranslator(currentLevel);
+                            break;
+                            
+                        }
+                        realTimer = 15;
+                    }
+                } else if (p.type === 'coin') {
+                    points += 200;
+                    coins += 1;
+                    if (coins % 10 === 0) {
+                        deaths -= 1;
+                    }
+                    p.x = -2000000;
+                    p.y = 20000000;
+                    
+                    
+                } else if (p.type === 'heart') {
+                    deaths -= 1;
+                    p.x = -(2)^10;
+                    p.y = -(2)^10;
+                } else {
+                    if(yv > 0){
+                    this.yvel = 0;
+                    this.falling = false;
+                    this.y = p.y - this.h;
+                    }
+                    if(yv < 0) {
+                        this.yvel = 0;
+                        this.falling = true;
+                        this.y = p.y + p.h;
+                    }
+                    if(xv > 0) {
+                        this.xvel = 0;
+                        this.x = p.x - this.w;
+                    }
+                    if(xv < 0) {
+                        this.xvel = 0;
+                        this.x = p.x + p.w;
+                    }
+
+                }
+            } 
+            else if (this.y + this.h > p.y && this.y < p.y + p.h && this.x + this.w > p.x + meX && this.x < p.x + p.w + meX && p.type === 'enemy1') {
+                    if (!this.falling) {
+                        this.timerDead++;
+                        if (this.timerDead < 75) {
+                            this.dead = true;
+                            this.xvel = 0;
+                            this.yvel = 0;
+                            this.gravity = 0;
+                            
+                        } else {
+                            this.dead = false;
+                            this.timerDead = 0;
+                            deaths += 1;
+                            if (points >= 300) {
+                                points -= 300;
+                            } else {
+                                points = 0;
+                            }
+                            this.x = 5;
+                            this.y = 350;
+                            realTimer = 20;
+                            
+                        }
+                    } else {
+                        if (this.timerDead < 1) {
+                        this.y = p.y - 70;
+                        this.gravity = 0;
+                        points += 200;
+                        p.type = 'coin';
+                        p.x = this.x + 50;
+                        p.y = this.y - 35;
+                            if (mode === 'bossA') { 
+                                stopwatch = 0;
+                                switch (bossA_Enum){
+                                    case 0: 
+                                        bossA_Enum = 1;
+                                    break;
+                                    case 1:
+                                        bossA_Enum = 2;
+                                    break;
+                                    case 2:
+                                        bossA_Enum = 3;
+                                        p.type = 'portal';
+                                        p.x = 500;
+                                        p.y = 448;
+                                        bossA_Enum = 0;
+                                    break;
+                                }
+                            } else if (mode === 'bossB') {                                       stopwatch = 0;
+                                switch (bossA_Enum){
+                                    case 0: 
+                                        bossA_Enum = 1;
+                                    break;
+                                    case 1:
+                                        bossA_Enum = 2;
+                                    break;
+                                    case 2:
+                                        bossA_Enum = 3;
+                                        p.type = 'portal';
+                                        p.x = 650;
+                                        p.y = 448;
+                                        bossA_Enum = 0;
+                                    break;
+                                }
+                            } else if (mode === 'bossC') {                                       stopwatch = 0;
+                                switch (bossA_Enum){
+                                    case 0: 
+                                        bossA_Enum = 1;
+                                    break;
+                                    case 1:
+                                        bossA_Enum = 2;
+                                    break;
+                                    case 2:
+                                        bossA_Enum = 3;
+                                    break;
+                                    case 3:
+                                        bossA_Enum = 4;
+                                        p.type = 'portal';
+                                        p.x = 750;
+                                        p.y = 448;
+                                        bossA_Enum = 0;
+                                    break;
+                                }
+                            } else if (mode === '4-1') {                                       stopwatch = 0;
+                                switch (bossA_Enum){
+                                    case 0: 
+                                        bossA_Enum = 1;
+                                    break;
+                                    case 1:
+                                        bossA_Enum = 2;
+                                    break;
+                                    case 2:
+                                        bossA_Enum = 3;
+                                    break;
+                                    case 3:
+                                        bossA_Enum = 4;
+                                    break;
+                                    case 4:
+                                        bossA_Enum = 5;
+                                    break;
+                                    case 5:
+                                        bossA_Enum = 6;
+                                    break;
+                                    case 6:
+                                        bossA_Enum = 7;
+                                    break;
+                                    case 7:
+                                        bossA_Enum = 8;
+                                    break;
+                                    case 8:
+                                        bossA_Enum = 9;
+                                    break;
+                                    case 9:
+                                        bossA_Enum = 10;
+                                        p.type = 'portal';
+                                        p.x = 1750;
+                                        p.y = 448;
+                                        bossA_Enum = 0;
+                                    break;
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+        } 
+    };
+};
+var p = new Player();
+}
+/** Miscellaneous **/ {
+levelCircle.check = function() {
+    return (this.x === mp.x && this.y === mp.y); 
+};
+cam = new Camera(p.x, p.y);
+cam2 = new Camera(mp.x, mp.y);
+levelTranslator(0);
+}
+/** Draw Functions **/ {
+var drawLevelBase = function(world) {
+    switch (world) {
+        case 1: 
+          background(0, 174, 255);
+            break;
+        case 2:
+            background(255, 183, 0);
+        break;
+        case 3:
+            background(200, 240, 255);
+        break;
+    }
+            
+    cam.follow(p);
+    fill(255, 0, 0);
+
+    backgroundLevelDraw(world);
+    pushMatrix();
+        translate(0,187.5);
+        for(var i = 0; i < platforms.length; i++){
+        platforms[i].draw();
+        }
+        p.update(platforms);
+    popMatrix();
+
+        if (mode === "1-1" || mode === "1-2" || mode === "1-3") {
+            pushMatrix();
+            translate(cloudX-600,0);
+            cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 0);
+            cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 0);
+            cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 0);
+            cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 0);
+            cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 0);
+            cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 0);
+            popMatrix();
+            pushMatrix();
+            translate(cloudX,0);
+            cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 0);
+            cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 0);
+            cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 0);
+            cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 0);
+            cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 0);
+            cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 0);
+            popMatrix();
+        } else if (mode === "2-1" || mode === "2-2" || mode === "2-3") {
+            pushMatrix();
+            translate(cloudX-600,0);
+            cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 2);
+            cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 2);
+            cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 2);
+            cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 2);
+            cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 2);
+            cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 2);
+            popMatrix();
+            pushMatrix();
+            translate(cloudX,0);
+            cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 2);
+            cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 2);
+            cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 2);
+            cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 2);
+            cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 2);
+            cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 2);
+            popMatrix();
+        } else if (mode === "3-1" || mode === "3-2" || mode === "3-3") {
+            pushMatrix();
+            translate(cloudX-600,0);
+            cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 3);
+            cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 3);
+            cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 3);
+            cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 3);
+            cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 3);
+            cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 3);
+            popMatrix();
+            pushMatrix();
+            translate(cloudX,0);
+            cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 3);
+            cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 3);
+            cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 3);
+            cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 3);
+            cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 3);
+            cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 3);
+            popMatrix();
+        }
+        cloudX += 0.75;
+        if (cloudX > 600) {
+            cloudX = 0;
+        }
+        textSize(30);
+        
+        pushMatrix();
+        translate(0, -170);
+        textAlign(LEFT);
+        
+        fill(255, 255, 255);
+        textSize(35);
+        text(points, cam.x + 90, cam.y - 71);
+        
+        noStroke();
+        fill(255, 234, 0);
+        ellipse(cam.x - 277, cam.y - 59, 20, 20);
+        fill(200, 200, 0);
+        ellipse(cam.x - 277, cam.y - 59, 12, 12);
+        rectMode(CENTER);
+        fill(255, 230, 0);
+        rect(cam.x - 277, cam.y - 59, 4, 6);
+        rectMode(LEFT);
+        fill(255, 255, 255);
+        textSize(23);
+        text("x", cam.x - 262, cam.y - 52);
+        textSize(30);
+        text(coins, cam.x - 247, cam.y - 50);
+        
+        heartSymbol(cam.x - 296, cam.y - 106, 0.25);
+        fill(255, 255, 255);
+        textSize(23);
+        text("x", cam.x - 263, cam.y - 82);
+        textSize(30);
+        text((10 - deaths), cam.x - 251, cam.y - 80);
+
+        fill(219, 219, 219,240);
+        noStroke();
+        ellipse(cam.x+220,cam.y-80,20,20); 
+        stroke(0, 0, 0);
+        line(cam.x+220,cam.y-80,cam.x+220,cam.y-88);
+        line(cam.x+220,cam.y-80,cam.x+228,cam.y-80);
+        fill(255, 255, 255);
+        if (realTimer > 9) {
+            textSize(28);
+            text(ceil(realTimer), cam.x + 234, cam.y - 72);
+        } else if (realTimer < 10) {
+            textSize(32);
+            text(ceil(realTimer), cam.x + 242, cam.y - 70);
+        }
+
+        
+        if (realTimer < 0) {
+            p.timerDead++;
+                if (p.timerDead < 75) {
+                        p.dead = true;
+                        p.xvel = 0;
+                        p.yvel = 0;
+                } else {
+                        p.dead = false;
+                        p.timerDead = 0;
+                        p.x = 5;
+                        p.y = 350;
+                        deaths += 1;
+                        realTimer = 20;
+                }
+        }
+        if (!p.portaling && !p.dead) {
+            realTimer -= 0.015;
+        }
+        popMatrix();
+};
+var drawBossBase = function() {
+    background(255, 111, 0);
+    cam.follow(p);
+    fill(255, 0, 0);
+        pushMatrix();
+    translate(0,-170);
+    
+    stroke(0, 0, 0);
+     //Ba.draw();
+    //Ba.update(platforms);
+    popMatrix();
+    pushMatrix();
+        translate(0,187.5);
+        for(var i = 0; i < platforms.length; i++){
+        platforms[i].draw();
+        }
+        
+        p.update(platforms);
+    popMatrix();
+
+
+    if (p.dead) {
+        stopwatch = 0;
+        pushMatrix();
+        translate(0,187.5);
+        for(var i = 0; i < platforms.length; i++){
+        platforms[i].draw();
+        }
+        popMatrix();
+    
+    }
+    //clouds 
+    {
+        pushMatrix();
+        translate(cloudX-600,0);
+        cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 1);
+        cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 1);
+        cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 1);
+        cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 1);
+        cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 1);
+        cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 1);
+        popMatrix();
+        pushMatrix();
+        translate(cloudX,0);
+        cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 1);
+        cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 1);
+        cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 1);
+        cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 1);
+        cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 1);
+        cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 1);
+        popMatrix();
+        cloudX += 0.75;
+        if (cloudX > 600) {
+            cloudX = 0;
+        }
+    }
+        textSize(30);
+        
+        pushMatrix();
+        translate(0, -170);
+        textAlign(LEFT);
+        
+        fill(255, 255, 255);
+        textSize(35);
+        text(points, cam.x + 90, cam.y - 71);
+        
+        noStroke();
+        fill(255, 234, 0);
+        ellipse(cam.x - 277, cam.y - 59, 20, 20);
+        fill(200, 200, 0);
+        ellipse(cam.x - 277, cam.y - 59, 12, 12);
+        rectMode(CENTER);
+        fill(255, 230, 0);
+        rect(cam.x - 277, cam.y - 59, 4, 6);
+        rectMode(LEFT);
+        fill(255, 255, 255);
+        textSize(23);
+        text("x", cam.x - 262, cam.y - 52);
+        textSize(30);
+        text(coins, cam.x - 247, cam.y - 50);
+        
+        heartSymbol(cam.x - 296, cam.y - 106, 0.25);
+        fill(255, 255, 255);
+        textSize(23);
+        text("x", cam.x - 263, cam.y - 82);
+        textSize(30);
+        text((10 - deaths), cam.x - 251, cam.y - 80);
+
+        fill(219, 219, 219,240);
+        noStroke();
+        ellipse(cam.x+220,cam.y-80,20,20); 
+        stroke(0, 0, 0);
+        line(cam.x+220,cam.y-80,cam.x+220,cam.y-88);
+        line(cam.x+220,cam.y-80,cam.x+228,cam.y-80);
+        fill(255, 255, 255);
+        if (realTimer > 9) {
+            textSize(28);
+            text(ceil(realTimer), cam.x + 234, cam.y - 72);
+        } else if (realTimer < 10) {
+            textSize(32);
+            text(ceil(realTimer), cam.x + 242, cam.y - 70);
+        }
+
+   
+    if ((stopwatch > 1.5 && stopwatch < 2.5) || (stopwatch > 6.5 && stopwatch < 7.5) || (stopwatch > 11.5 && stopwatch < 12.5)) {
+        meX-=5;
+    } 
+    
+    if ((stopwatch > 4 && stopwatch < 5) || (stopwatch > 9 && stopwatch < 10) || (stopwatch > 14 && stopwatch < 15)){
+        meX+=5;
+    }
+    
+        if (realTimer < 0) {
+            p.timerDead++;
+                if (p.timerDead < 75) {
+                        p.dead = true;
+                        p.xvel = 0;
+                        p.yvel = 0;
+                } else {
+                        p.dead = false;
+                        p.timerDead = 0;
+                        p.x = 5;
+                        p.y = 350;
+                        deaths += 1;
+                        realTimer = 20;
+                }
+        }
+        if (!p.portaling && !p.dead) {
+            //realTimer -= 0.015;
+            
+        }
+        stopwatch+=0.025;
+        popMatrix();
+};
+var drawCongratulations = function() {
+        background(0, 174, 255);
+    cam.follow(p);
+    fill(255, 0, 0);
+    backgroundLevelDraw();
+    pushMatrix();
+        translate(0,187.5);
+        for(var i = 0; i < platforms.length; i++){
+        platforms[i].draw();
+        }
+        p.update(platforms);
+    popMatrix();
+        pushMatrix();
+        translate(cloudX-600,0);
+        cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 0);
+        cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 0);
+        cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 0);
+        cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 0);
+        cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 0);
+        cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 0);
+        popMatrix();
+        pushMatrix();
+        translate(cloudX,0);
+        cloudSymbol(cam.x-260, cam.y-200,1.5,1.5, 0);
+        cloudSymbol(cam.x-230, cam.y-60,0.8,0.8, 0);
+        cloudSymbol(cam.x-60, cam.y-230,1.1,1.1, 0);
+        cloudSymbol(cam.x+60, cam.y-80,0.9,0.9, 0);
+        cloudSymbol(cam.x+120, cam.y-170,1.3,1.3, 0);
+        cloudSymbol(cam.x+260, cam.y-120,0.8,0.8, 0);
+        popMatrix();
+        cloudX += 0.75;
+        if (cloudX > 600) {
+            cloudX = 0;
+        }
+        textSize(60);
+        text("Congratulations! You've beat the game! \nYou have received all 30 crowns, making you a true master. \nYou have Crowned all the Worlds with " + points + " points! - Timothy Mathew", 50, 300);
+};
+var drawWorldMap = function() {
+    
+    pushMatrix();
+    translate(-0,600);
+    background(255, 255, 255);
+    
+    homeWMB.display();
+    cam2.follow(mp);
+            
+
+    fill(71, 255, 0);
+    stroke(0, 255, 0);
+    rect(0,-400,600,400);
+    
+    fill(255, 204, 0);
+    stroke(255, 136, 0);
+    rect(0, -600, 1000, 200);
+
+    fill(158, 236, 255);
+    stroke(255, 255, 255);
+    rect(600,-400,400,400);
+    
+    fill(255, 119, 0);
+    stroke(255, 68, 0);
+    rect(1004, -400, 226, 400);
+    
+    fill(247, 255, 0);
+    stroke(255, 221, 0);
+    rect(1004, -600, 226, 200);
+    
+    // for (var i = 0; i < 15; i++) {
+    //     stroke(225, 0, 255);
+    //     line(0,-50*i,600,-50*i);
+    //     line(50*i,0,50*i,-600);
+    // }
+
+
+    rc1_a.draw();
+    rc1_b.draw();
+    rc1_c.draw();
+    rc2_a.draw();
+    rc2_b.draw();
+    rc2_c.draw();
+    rc2_d.draw();
+    rc2_e.draw();
+    rc2_f.draw();
+    rc2_g.draw();
+    rc3_a.draw();
+    rc3_b.draw();
+    rc3_c.draw();
+    rc3_d.draw();
+    rc4_a.draw();
+    rc4_b.draw();
+    rc5_a.draw();
+    lc1_0.draw();
+    lc1_1.draw();
+    lc1_2.draw();
+    lc1_3.draw();
+    lc2_1.draw();
+    lc2_2.draw();
+    lc2_3.draw();
+    lc3_1.draw();
+    lc3_2.draw();
+    lc3_3.draw();
+    lc4_1.draw();
+    lc5_1.draw();
+    
+    textAlign(LEFT);
+    if (((lc1_1.x === mp.x + 18) || (lc1_1.x === mp.x + 20))  && lc1_1.y === mp.y + 20 && (lc1_1.state === 1)) {
+        mLevel = "1-1";
+        currentLevel = 0;
+        p.x = 4;
+        p.y = 360;
+        if (levelSelecting()) {
+            transitions.active = true;
+            transitions.next = "1-1";
+        }
+        levelTranslator(currentLevel);
+    } else if (((lc1_2.x === mp.x + 18) || (lc1_2.x === mp.x + 20)) && lc1_2.y === mp.y + 20 && (lc1_2.state === 1)) {
+        mLevel = "1-2";
+        currentLevel = 1;
+        p.x = 4;
+        p.y = 360;
+        if (levelSelecting()) {
+            transitions.active = true;
+            transitions.next = "1-2";
+        }
+        levelTranslator(currentLevel);
+    } else if (((lc1_3.x === mp.x + 22) || (lc1_3.x === mp.x + 20)) && lc1_3.y === mp.y + 20 && (lc1_3.state === 1)) {
+        mLevel = "1-3";
+        currentLevel = 2;
+        p.x = 4;
+        p.y = 360;
+        if (levelSelecting()) {
+            transitions.active = true;
+            transitions.next = "1-3";
+        }
+        levelTranslator(currentLevel);
+    } else if (((lc2_1.x === mp.x + 18) || (lc2_1.x === mp.x + 20)) && lc2_1.y === mp.y + 21 && (lc2_1.state === 1)) {
+        mLevel = "2-1";
+        currentLevel = 4;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "2-1";
+            }
+        levelTranslator(currentLevel);    
+      } else if (((lc2_2.x === mp.x + 19) || (lc2_2.x === mp.x + 20)) && lc2_2.y === mp.y + 21 && (lc2_2.state === 1)) {
+        mLevel = "2-2";
+        currentLevel = 5;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "2-2";
+            }
+        levelTranslator(currentLevel);    
+      } else if (((lc2_3.x === mp.x + 19) || (lc2_3.x === mp.x + 20)) && lc2_3.y === mp.y + 21 && (lc2_3.state === 1)) {
+        mLevel = "2-3";
+        currentLevel = 6;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "2-3";
+            }
+        levelTranslator(currentLevel);    
+      } else if (((lc3_1.x === mp.x + 19) || (lc3_1.x === mp.x + 20)) && lc3_1.y === mp.y + 21 && (lc3_1.state === 1)) {
+        mLevel = "3-1";
+        currentLevel = 8;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "3-1";
+            }
+        levelTranslator(currentLevel);    
+      } else if (((lc3_2.x === mp.x + 21) || (lc3_2.x === mp.x + 20)) && lc3_2.y === mp.y + 21 && (lc3_2.state === 1)) {
+        mLevel = "3-2";
+        currentLevel = 9;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "3-2";
+            }
+        levelTranslator(currentLevel);    
+      } else if (((lc3_3.x === mp.x + 21) || (lc3_3.x === mp.x + 20)) && lc3_3.y === mp.y + 20 && (lc3_3.state === 1)) {
+        mLevel = "3-3";
+        currentLevel = 10;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "3-3";
+            }
+        levelTranslator(currentLevel);    
+      } else if (((lc4_1.x === mp.x + 19) || (lc4_1.x === mp.x + 21)) && lc4_1.y === mp.y + 20 && (lc4_1.state === 1)) {
+        mLevel = "FINAL";
+        currentLevel = 12;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "4-1";
+            }
+        levelTranslator(currentLevel);    
+      } else if (((lc5_1.x === mp.x + 19) || (lc5_1.x === mp.x + 21)) && lc5_1.y === mp.y + 23 && (lc5_1.state >= 1) && (lc4_1.state === 2)) {
+        mLevel = "CROWN";
+        currentLevel = 13;
+        p.x = 5;
+        p.y = 360;
+            if (levelSelecting()) {
+                transitions.active = true;
+                transitions.next = "5-1";
+            }
+        levelTranslator(currentLevel);    
+      } else {
+        mLevel = " ";
+    }
+    //arrow
+    fill(255, 0, 0);
+    strokeWeight(2);
+    stroke(255, 0, 0);
+    pushMatrix();
+    rect(30,-55,30,10);
+    triangle(60,-60,70,-50,60,-40);
+    popMatrix();
+    
+    mp.update();    
+    //mp.draw();
+    
+    textSize(50);
+    fill(0, 133, 250,wmA);
+    noStroke();
+    rect(cam2.x-290, -cam2.y - 290, 100, 80);
+    if (mouseX > cam2.x-290 && mouseX < cam2.x-190  && mouseY > -cam2.y + 600 - 290 && mouseY < -cam2.y + 600 - 210 && click) {
+            transitions.active = true;
+            transitions.next = "menu";
+    }
+    fill(255, 255, 255);
+    textSize(25);
+    
+    if (mLevel !== "CROWN") {
+        text('WORLD', cam2.x - 285, - cam2.y - 260);
+    } else {
+        text('CROWN', cam2.x - 288, - cam2.y - 255);
+        text('WORLD', cam2.x - 285, - cam2.y - 226);
+    }
+    
+    if (mLevel === "FINAL") {
+        textSize(33);
+        text(mLevel, cam2.x - 287, -cam2.y - 225);
+    } else {
+        textSize(50);
+        if (mLevel !== 'CROWN') {
+        text(mLevel, cam2.x - 277.5, - cam2.y - 220);
+        }
+    }
+    
+    wmA++;
+    popMatrix();
+    
+};
+var drawInstructions = function() {
+    background(136, 0, 255);
+    fill(255, 255, 255);
+    textAlign(LEFT);
+    textSize(65);
+    
+    fill(20, 20, 20);
+    text("Instructions", 110, 93);
+    fill(255, 255, 255);
+    text("Instructions", 106, 90);
+    
+    line(95,100,480,100);
+    
+    textSize(20);
+    fill(20,20,20);
+    text("  Using the arrow keys, move the character to select levels. \n\n   If a level portal (the circle) is gray, the level is locked. If it is \naqua/green, the level is unlocked and playable. If you have \nreceived the crown for the level and the level portal is \naqua/green, the level has successfully been completed. \n\nThe character must be completely on the level portal in order \nto be able to select the level. The level title (ex. 1-1) will show \nup if the world map character is completely on the level portal. \nIn order to select the level, press 'space' or 'enter'. In order to \n return back to the menu screen, click the level title button. \n\n Use the left/right arrow keys to move the character in the \nlevels and the up arrow to jump. You can collect coins and \nhearts, and jump on enemies - which can float & phase \nthrough platforms - to gain points. However, it is not \n necessary to collect them in order to finish the level. In order \n to finish the level, press 'space' or 'enter' at the entrance \n                 (left side) of the door. Enjoy!!", 8, 145);
+    fill(56, 255, 245);
+    text("  Using the arrow keys, move the character to select levels. \n\n   If a level portal (the circle) is gray, the level is locked. If it is \naqua/green, the level is unlocked and playable. If you have \nreceived the crown for the level and the level portal is \naqua/green, the level has successfully been completed. \n\nThe character must be completely on the level portal in order \nto be able to select the level. The level title (ex. 1-1) will show \nup if the world map character is completely on the level portal. \nIn order to select the level, press 'space' or 'enter'. In order to \n return back to the menu screen, click the level title button. \n\n Use the left/right arrow keys to move the character in the \nlevels and the up arrow to jump. You can collect coins and \nhearts, and jump on enemies - which can float & phase \nthrough platforms - to gain points. However, it is not \n necessary to collect them in order to finish the level. In order \n to finish the level, press 'space' or 'enter' at the entrance \n                 (left side) of the door. Enjoy!!", 6, 143);
+    homeIB.display();
+    homeSymbol(2239,135,0.228, 0.19);
+};
+var drawMenu = function() {
+    background(0, 255, 217);
+
+    if (tX < 292) {
+        tX += 10;
+    }
+    if (t2X > 309) {
+        t2X -= 10;
+    }
+
+    textFont(gameFont, 100);
+        for(var i = 0; i < 8; i++){
+            pushMatrix();
+                //translate(-30, -50);
+                scale(1.1, 1);
+                
+                if(i === 7){
+                    fill(255, 255, 0);    
+                } else {
+                    fill(220, 220, 0);
+                }
+                textSize(90);
+                textAlign(CENTER);
+                text("Crown", tX - 30, 150 - i);
+                text("Worlds", t2X - 30, 240 - i);
+                
+            popMatrix();
+        }
+    if (tX === 300 && t2X === 300) {
+        textSize(25);
+        fill(255, 255, 255);
+        text("Timothy Mathew",500, 595);
+        fill(167, 0, 250);
+        text("Timothy Mathew",498.5,596);
+        textSize((4));
+        startB.display();
+        instructionsB.display();
+        leaderboardB.display();
+        playSymbol(145, 325, 0.8, 0.8);
+        pushMatrix();
+        rotate(25);
+        crownSymbol(345, -15, 0.4, 0.4);
+        popMatrix();
+        crownSymbol(-30, 635, 0.25, 0.25);
+        fill(219, 183, 0);
+        textSize(35);
+        text("x", 57, 573);
+        textSize(50);
+        if(crowns <= 9){
+            text(crowns, 82.5, 572.5);
+        } else {
+            text(crowns, 95, 572.5);
+        }
+    }
+};
+var drawLeaderboard = function() {
+    background(0, 255, 140);
+    fill(217, 255, 0);
+    textSize(60);
+    text("LEADERBOARD", 300, 100);
+    fill(0, 123, 255);
+    textSize(30);
+    textAlign(LEFT);
+    text("1. " + "Timothy - timmy625" + "    36300", 30, 170);
+    text("2. " + "Programmer 17     " + "      34600", 30, 210);
+    text("2. " + "Ashish Rajam    " + "          34600", 30, 250);    
+    text("4. " + "NishFish15 " + "  34200", 30, 290);
+    text("4. " + "Daniel Lee" + "                   33800", 30, 290); 
+    text("5. " + "Tyler Yee        " + "              33000", 30, 330);
+    text("6. " + "Pranav Sharma       " +   "    33400", 30, 370);
+    text("7. " + "Hrudypeela " + "                 32600", 30, 410);
+    text("8. " + "b.kell.2022 " + "                  32400", 30, 450);
+    text("9. " + "𝖕𝖎𝖗𝖈𝖍 𝖕𝖗𝖔𝖌𝖗𝖆𝖒𝖒𝖎𝖓𝖌™" +  " 31200", 30, 490);
+    text("10. " + "n/a" + "          ", 30, 530);
+    
+    
+    
+    textSize(16);
+    fill(170, 0, 255);
+    text("Spin-off on the final level displaying the number of points, put the \nnumber of points in the title, and post the link in the Tips & Thanks \n                    Section to be put on the leaderboard.", 40, 555);
+    homeIB.display();
+    homeSymbol(2239,135,0.228, 0.19);
+};
+var drawgameOver = function() {
+    background(250, ((frameCount/600)%500), 50);
+    textSize(120);
+    fill(0, 0, 0);
+    textAlign(CENTER);
+    text("Game\n Over!", 296.5, 150);
+    fill(255, 242, 0);
+    text("Game\n Over!", 294, 150);
+    fill(255, 140, 0);
+    text("Game\n Over!", 290, 150);
+    textSize(40);
+    textAlign(LEFT);
+    textSize(75);
+    text("Continue...", 125, 430);
+    homeGOB.display();
+    homeSymbol(460, 1240, 0.456, 0.38);
+};
+var drawIntro = function(){
+    if (speed < 40) {
+      speed = speed * 1.05;
+    } else {
+      speed = 40;
+    }
+    
+    background(0, 0, 0);
+    pushMatrix();
+    translate(300, 300);
+    for (var i = 0; i < stars.length; i++) {
+    stars[i].update();
+    stars[i].show();
+  }
+    popMatrix();
+
+    timer++;
+
+    if (timer > 120 && textIntroSize < 70) {
+        textIntroSize++;
+        textIntroColor += 3;
+    } else if (timer > 120 && textIntroSize >= 70){
+        textIntroSize = 70;
+    }
+    if (textIntroSize > 20) {
+        if (textIntroColor2 < 255) {
+            textIntroColor2 += 10;
+        } else {
+            textIntroColor2 = 255;
+            if (textIntroColor1 > 0) {
+            textIntroColor1 -= 10;
+            } else {
+                textIntroColor1 = 0;
+                if (textIntroColor  < 255) {
+                textIntroColor3 += 10;
+                } else {
+                    textIntroColor3 = 255;
+                }
+            }
+        }
+    }
+    textSize(textIntroSize);
+    textAlign(CENTER);
+
+    
+        
+    fill(textIntroColor1, textIntroColor2, textIntroColor3);
+    // transitionsF1 = sin(frameCount%90);
+        
+    //     transitionsF1M = map(transitionsF1, 0, 0.98, 100, 250);
+    //     transitionsF2M = map(transitionsF1, 0, 0.98, 155, 25);
+    //     transitionsF3M = map(transitionsF1, 0, 0.98, 0, 255);
+
+    // fill(transitionsF1M, transitionsF2M, transitionsF3M);
+    text("Timmy625 \nPresents", 300, 300);
+    textAlign(LEFT);
+    if (timer > 225) {
+        transitions.active = true;
+        transitions.next = 'menu';
+        //levelTranslator(3);
+        
+    }
+        
+};
+var sceneLogic = function(){
+    switch (mode) {
+        case 'intro':
+            drawIntro();
+        break;
+        case 'menu':
+            drawMenu();
+        break;
+        case 'instructions':
+            drawInstructions();
+        break;
+        case 'worldMap': 
+            drawWorldMap();
+        break;
+        case 'leaderboard':
+            drawLeaderboard();
+        break;
+    }
+    if (mode === '1-1' || mode === '1-2' || mode === '1-3') {
+        drawLevelBase(1);
+    }
+    if (mode === '2-1' || mode === '2-2' || mode === '2-3') {
+        drawLevelBase(2);
+    }
+    if (mode === '3-1' || mode === '3-2' || mode === '3-3') {
+        drawLevelBase(3);
+    }
+    if (mode === 'bossA' || mode === 'bossB' || mode === 'bossC' || mode === '4-1') {
+        drawBossBase();
+    }
+    if (mode === "gameOver") {
+        drawgameOver();
+        points = 0;
+    }
+    if (mode === '5-1') {
+        drawCongratulations();
+    }
+};
+mode = 'intro';
+mouseClicked = function() { click = true; };
+draw = function(){
+    cursor(ARROW);
+    if (p.y > ((levelMaps[currentLevel][(levelMaps[currentLevel].length-1)].length)*25)) {
+        p.x = 4;
+        p.y = 350;
+    }
+    
+    if ((10-deaths) < 1) {
+        transitions.active = true;
+        transitions.next = "gameOver";
+        deaths = 0;
+    }
+    
+    if (transitions.active) {
+        transitionsF1 = sin(transitions.w/18);
+        
+        if (transitionsF2M < 255 && transitionsF3M === 0) {
+            transitionsF2M += 10;
+        } else {
+            transitionsF2M = 255;
+            if (transitionsF1M > 0) {
+                transitionsF1M -= 10;
+            } else {
+                transitionsF1M = 0;
+                transitionsF3M += 10;
+            }
+        }
+         
+        fill(transitionsF1M, transitionsF2M, transitionsF3M);
+        
+        noStroke();
+        
+        rect(0, 0, transitions.w, 150);
+        rect(600, 450, -transitions.w, 150);
+        rect(0, 0, 150, transitions.w - 400);
+        rect(450,600,150, -transitions.w + 400);
+        
+        rect(0,150,transitions.w-800,300);
+        rect(600,150,-transitions.w+800,300);
+        rect(150,0, 300, transitions.w - 800);
+        rect(150,600,300, -transitions.w + 800);
+        
+        if (transitions.w - 600 > width) {
+          transitions.active = false;
+          transitions.w = 0;
+          mode = transitions.next;
+        } else if (transitions.w - 400 > width) {
+            transitions.w += 8;
+        } else if (transitions.w >= 0) {
+            transitions.w += 20;
+        } 
+    }
+    else if (!transitions.active) {
+        sceneLogic();
+        transitionsF1M = 255;
+        transitionsF2M = 230;
+        transitionsF3M = 0;
+    }
+    click = false;
+};
+}
+
+        }
+        if (typeof draw !== 'undefined') processing.draw = draw;
+    });
+  </script>
+</body>
+</html>
